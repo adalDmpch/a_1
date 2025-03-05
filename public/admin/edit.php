@@ -34,17 +34,11 @@ try {
 } catch (PDOException $e) {
     die("Error de conexión: " . $e->getMessage());
 }
+
+include_once '../templates/headeradmin.php';
+include_once '../templates/navbaradmin.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Empleado</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100">
 
 <div class="flex items-center justify-center min-h-screen py-8">
     <div class="bg-white shadow-2xl rounded-2xl p-8 max-w-2xl w-full">
@@ -140,5 +134,6 @@ try {
     }
 </style>
 
-</body>
-</html>
+<?php
+include_once '../templates/footeradmin.php';
+?>

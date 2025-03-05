@@ -18,47 +18,12 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "admin") {
     header("Location: ../public/LoginAdmin.php");
     exit();
 }
+
+
+include_once '../templates/headeradmin.php';
+include_once '../templates/navbaradmin.php';
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Negocio</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
 
-<!-- Navbar -->
-<nav class="bg-white shadow-lg">
-    <div class="max-w-7xl mx-auto px-4">
-        <div class="flex justify-between items-center py-4">
-            <div class="flex items-center">
-                <img src="../../assets/images/logo.png" alt="Logo" class="h-12 w-12 rounded-full"/>
-                <span class="text-2xl font-bold text-gray-800 ml-2">Bella Hair</span>
-            </div>
-            
-            <button id="menuButton" class="md:hidden text-gray-800 hover:text-pink-500">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                </svg>
-            </button>
-
-            <div class="hidden md:flex items-center space-x-8">
-                <a href="/a_1/public/admin/index.php" class="text-gray-800 hover:text-pink-500">Inicio</a>
-                <a href="perfil.html" class="text-pink-500">Mi Perfil</a>
-            </div>
-        </div>
-
-        <div id="mobileMenu" class="hidden md:hidden pb-4">
-            <div class="flex flex-col space-y-4">
-                <a href="/a_1/public/admin/index.php" class="text-gray-800 hover:text-pink-500">Inicio</a>
-                <a href="perfil.html" class="text-pink-500">Mi Perfil</a>
-            </div>
-        </div>
-    </div>
-</nav>
-
-<body class="bg-gray-100">
     <div class="flex items-center justify-center min-h-screen pt-4"> <!-- Cambié pt-4 a pt-0 aquí -->
         <div class="relative flex flex-col space-y-10 bg-white shadow-2xl rounded-2xl md:flex-row ">
             <div class="flex flex-col justify-center p-8 md:p-14  space-y-20">
@@ -175,5 +140,7 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "admin") {
     input.type = input.type === 'password' ? 'text' : 'password';
 }
     </script>
-</body>
-</html>
+
+<?php
+include_once '../templates/footeradmin.php';
+?>

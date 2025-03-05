@@ -100,7 +100,7 @@
             </div>
         </div>
         
-        <h2 class="text-white text-2xl font-bold mb-6 text-center form-appear">Welcome</h2>
+        <h2 class="text-white text-2xl font-bold mb-6 text-center form-appear">¡Welcome!</h2>
         
         <form action="../actions/login.php" method="POST" class="space-y-6">
             <div class="form-appear relative">

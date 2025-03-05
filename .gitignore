@@ -1,0 +1,18 @@
+# Ignorar archivos de configuración sensibles
+config/confg.php
+
+# Ignorar archivos de entorno
+.env
+
+# Ignorar dependencias de Composer (si usas PHP con Composer)
+vendor/
+
+# Ignorar caché y archivos temporales
+*.log
+cache/
+tmp/
+
+# Ignorar configuraciones de IDEs y editores de código
+.vscode/
+.idea/
+*.swp

@@ -2,7 +2,7 @@
 session_start(); // Iniciar sesión para usar $_SESSION
 $mensaje = "";
 
-require '../../config/confg.php';
+require '../config/confg.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
@@ -255,7 +255,7 @@ if (isset($_SESSION['mensaje'])) {
 
                 <div class="text-center mt-6">
                     <p class="text-gray-600">¿Ya tienes cuenta? 
-                        <a href="../public/../login.php" class="text-emerald-600 font-medium hover:underline">Inicia sesión aquí</a>
+                        <a href="../public/login.php" class="text-emerald-600 font-medium hover:underline">Inicia sesión aquí</a>
                     </p>
                 </div>
             </form>

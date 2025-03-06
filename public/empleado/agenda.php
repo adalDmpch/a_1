@@ -85,11 +85,11 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "empleado") {
         <!-- Menú móvil -->
         <div id="mobileMenu" class="md:hidden hidden bg-white border-b border-gray-200 py-4">
             <div class="max-w-7xl mx-auto px-4 space-y-3">
-                <a href="inicio.html" class="block text-gray-600 hover:text-emerald-600 py-2">Inicio</a>
-                <a href="servicios.html" class="block text-gray-600 hover:text-emerald-600 py-2">Mis servicios</a>
-                <a href="Aendas.html" class="block text-emerald-600 font-medium py-2">Agendas</a>
-                <a href="/templates/perfil.html" class="block bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-all inline-block mt-2">
-                    Perfil
+                <a href="/a_1/public/empleado/inicio.php" class="block text-gray-600 hover:text-emerald-600 py-2">Inicio</a>
+                <a href="/a_1/public/empleado/agenda.php" class="block text-gray-600 hover:text-emerald-600 py-2">Agendas</a>
+                <a href="/a_1/public/empleado/perfil.php" class="block text-emerald-600 font-medium py-2">Perfil</a>
+                <a href="../../actions/logout.php" class="block bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-all inline-block mt-2">
+                    Cerrar Sesion
                 </a>
             </div>
         </div>

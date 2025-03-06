@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     header("Location: ../public/cliente/perfil.php");
                     break;
                 default:
-                    header("Location: ../public/LoginAdmin.php");
+                    header("Location: ../public/login.php");
                     break;
             }
             exit();

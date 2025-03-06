@@ -1,14 +1,91 @@
 <?php
 require '../../config/confg.php';
-
-
 session_start();
+
 if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "empleado") {
     header("Location: ../LoginAdmin.php");
     exit();
 }
 
+$user_id = $_SESSION['user_id'];
+
+// Obtener la información actual del empleado y su email en usuarios
+$sql = "SELECT e.*, u.email_usuario FROM empleados e
+        LEFT JOIN usuarios u ON e.id = u.empleado_id
+        WHERE u.id = ?";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([$user_id]);
+$empleado = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$empleado) {
+    die("No se encontró información en la tabla empleados para este usuario.");
+}
+
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update_profile"])) {
+    $nombre = $_POST["nombreempleado"] ?? '';
+    $telefono = $_POST["phoneempleado"] ?? '';
+    $edad = $_POST["edad"] ?? '';
+    $descripcion = $_POST["descripcion"] ?? '';
+    $nuevo_email = $_POST["email_empleado"] ?? '';
+    $foto_perfil = $empleado["foto_de_perfil"]; // Mantener la imagen anterior por defecto
+
+    try {
+        $pdo->beginTransaction();
+    
+        // Manejo de imagen de perfil (solo si se sube una nueva)
+        if (!empty($_FILES['foto_de_perfil']['name']) && $_FILES['foto_de_perfil']['error'] === UPLOAD_ERR_OK) {
+            $foto_nombre = basename($_FILES['foto_de_perfil']['name']);
+            $uploads_dir = '../uploads/'; // Usamos la carpeta "public/uploads"
+
+            // Verificar si la carpeta 'uploads' existe dentro de 'public'
+            // Ya no la creamos si existe
+            if (!is_dir($uploads_dir)) {
+                mkdir($uploads_dir, 0777, true);
+            }  
+             
+            $foto_destino = $uploads_dir . $foto_nombre;
+
+            if (move_uploaded_file($_FILES['foto_de_perfil']['tmp_name'], $foto_destino)) {
+                $foto_perfil = $uploads_dir . $foto_nombre; // Solo cambiar si hay una nueva imagen
+            } else {
+                throw new Exception("Error al guardar la imagen.");
+            }
+        }
+
+        // Actualizar empleados, asegurando que foto_de_perfil solo se actualiza si se subió una nueva imagen
+        $sql_update_empleado = "UPDATE empleados SET nombreempleado = ?, phoneempleado = ?, edad = ?, descripcion = ?". 
+                               (!empty($_FILES['foto_de_perfil']['name']) ? ", foto_de_perfil = ?" : "") . 
+                               " WHERE id = ?";
+        $params = [$nombre, $telefono, $edad, $descripcion];
+
+        if (!empty($_FILES['foto_de_perfil']['name'])) {
+            $params[] = $foto_perfil;
+        }
+        $params[] = $empleado["id"];
+
+        $stmt = $pdo->prepare($sql_update_empleado);
+        $stmt->execute($params);
+    
+        // Desvincular y actualizar email en empleados y usuarios
+        $sql_unlink_email = "UPDATE empleados SET email_empleado = NULL WHERE email_empleado = ?";
+        $pdo->prepare($sql_unlink_email)->execute([$empleado["email_usuario"]]);
+
+        $sql_update_usuario = "UPDATE usuarios SET email_usuario = ? WHERE email_usuario = ?";
+        $pdo->prepare($sql_update_usuario)->execute([$nuevo_email, $empleado["email_usuario"]]);
+
+        $sql_relink_email = "UPDATE empleados SET email_empleado = ? WHERE id = ?";
+        $pdo->prepare($sql_relink_email)->execute([$nuevo_email, $empleado["id"]]);
+
+        $pdo->commit();
+        echo "<script>alert('Perfil actualizado correctamente'); window.location.href='perfil.php';</script>";
+    
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        die("Error al actualizar el perfil: " . $e->getMessage());
+    }
+}
 ?>
+
 
 
 <!DOCTYPE html>
@@ -21,28 +98,12 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "empleado") {
     <title>Editar Perfil - Noir Elite - Barbería & Estilistas</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Inter:wght@300;400;600&display=swap');
-
-        .font-heading {
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .font-body {
-            font-family: 'Inter', sans-serif;
-        }
-
-        .hover-zoom {
-            transition: transform 0.3s ease;
-        }
-
-        .hover-zoom:hover {
-            transform: scale(1.03);
-        }
     </style>
 </head>
 
-<body >
+<body class="bg-gray-50 font-[Inter]">
     <!-- Navbar -->
-    <nav class="bg-white border-b border-gray-200 fixed w-full z-50">
+    <nav  class="bg-white border-b-2 border-emerald-500/20 shadow-sm">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between items-center h-20">
                 <!-- Logo -->
@@ -53,12 +114,14 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "empleado") {
                     </h1>
                 </div>
 
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="/a_1/public/empleado/inicio.php" class="text-gray-600 hover:text-emerald-600">Inicio</a>
-                    <a href="/a_1/public/empleado/agenda.php" class="text-gray-600 hover:text-emerald-600">Agendas</a>
-                    <a href="/a_1/public/empleado/perfil.php" class="text-emerald-600 font-medium">Perfil</a>
-                    <a href="../../actions/logout.php" class="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-all">
-                        Cerrar Sesión
+                <div class="hidden md:flex items-center space-x-6">
+                    <!-- <a href="" class="text-gray-600 hover:text-gray-900">Volver al Dashboard</a> -->
+                    <a href="../empleado/perfil.php" class="flex items-center space-x-3 p-3 text-red-600 hover:bg-red-100  px-3 py-2 rounded-lg">
+                        <svg class="w-6 h-6 text-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                d="M3 12l9-9 9 9M4 10v10a2 2 0 002 2h12a2 2 0 002-2V10" />
+                        </svg>
+                        <span>Inicio</span>
                     </a>
                 </div>
 
@@ -71,107 +134,109 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "empleado") {
             </div>
         </div>
 
-        <!-- Menú móvil -->
-        <div id="mobileMenu" class="md:hidden hidden bg-white border-b border-gray-200 py-4">
+       <!-- Menú móvil -->
+       <div id="mobileMenu" class="md:hidden hidden bg-white border-b border-gray-200 py-4">
             <div class="max-w-7xl mx-auto px-4 space-y-3">
-                <a href="/a_1/public/empleado/inicio.php" class="block text-gray-600 hover:text-emerald-600 py-2">Inicio</a>
-                <a href="/a_1/public/empleado/agenda.php" class="block text-gray-600 hover:text-emerald-600 py-2">Agendas</a>
-                <a href="/a_1/public/empleado/perfil.php" class="block text-emerald-600 py-2">Perfil</a>
-                <a href="../../actions/logout.php"
-                    class="block bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-all inline-block mt-2">
-                    Cerrar Sesión
-                </a>
+                <a href="../empleado/perfil.php" class="flex items-center space-x-3 p-3 text-red-600 hover:bg-red-100  px-3 py-2 rounded-lg">
+                        <svg class="w-6 h-6 text-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                d="M3 12l9-9 9 9M4 10v10a2 2 0 002 2h12a2 2 0 002-2V10" />
+                        </svg>
+                        <span>Inicio</span>
+                    </a>
             </div>
         </div>
     </nav>
 
-    <!-- Contenido principal - con espacio para el navbar fijo -->
-    <main class="pt-28 pb-16 max-w-6xl mx-auto px-4">
-        <div class="bg-white rounded-2xl shadow">
-            <!-- Portada y foto de perfil -->
-            <div class="relative h-48 md:h-64 bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-t-2xl">
-                <div class="absolute -bottom-16 left-6 md:left-8">
-                    <div class="h-32 w-32 rounded-full border-4 border-white bg-gray-200 overflow-hidden">
-                        <img id="profilePreview" src="<?= isset($empleado['foto_de_perfil']) && !empty($empleado['foto_de_perfil']) ? $empleado['foto_de_perfil'] : '/assets/images/barbero1.webp' ?>" alt="Foto de perfil"
-                            class="h-full w-full object-cover">
+
+
+
+
+
+    <!-- Main content -->
+    <main class="pt-10  pb-10 max-w-5xl mx-auto px-4">
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <!-- Profile header with green background -->
+            <div class="relative">
+                <div class="bg-emerald-500 h-48 rounded-t-xl"></div>
+
+                <div class="relative">
+                    <div class="absolute -bottom-12 left-8 group">
+                        <img id="preview" 
+                             src="<?= !empty($empleado['foto_de_perfil']) ? $empleado['foto_de_perfil'] : '../public/uploads/default.png' ?>" 
+                             alt="Foto de perfil" 
+                             class="h-32 w-32 rounded-full object-cover border-4 border-white">
+                        
+                        <label for="foto_de_perfil" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-50 rounded-full transition-all duration-200 cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white opacity-0 group-hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </label>
                     </div>
                 </div>
             </div>
 
-            <!-- Formulario de edición -->
-            <div class="pt-20 px-6 md:px-8 pb-8">
-                <div class="space-y-6">
-                    <form id="profileForm" method="POST" action="" enctype="multipart/form-data">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h2 class="text-2xl font-heading font-bold">Editar Perfil</h2>
-                                <p class="text-gray-600">Actualiza tu información personal</p>
-                            </div>
-                            <div class="flex space-x-3">
-                                <a href="/a_1/public/empleado/perfil.php"
-                                    class="px-5 py-2 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-all">
-                                    Cancelar
-                                </a>
-                                <button type="submit" name="update_profile"
-                                    class="px-5 py-2 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 transition-all">
-                                    Guardar
-                                </button>
-                            </div>
+            <!-- Form container -->
+            <div class="pt-16 px-6 pb-8">
+                <form id="profileForm" method="POST" action="" enctype="multipart/form-data">
+                    <input type="file" id="foto_de_perfil" name="foto_de_perfil" accept="image/*" class="hidden" onchange="previewImage(event)">
+                    
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h2 class="text-2xl font-[Poppins] font-bold">Editar Perfil</h2>
+                            <p class="text-gray-700 text-sm">Actualiza tu información personal</p>
                         </div>
+                        <div class="flex space-x-3">
+                            <a href="/a_1/public/empleado/perfil.php"
+                                class="px-4 py-2 bg-red-200 text-red-700 rounded-full hover:bg-red-300 transition-all text-sm">
+                                Cancelar
+                            </a>
+                            <button type="submit" name="update_profile"
+                                class="px-4 py-2 bg-emerald-500 text-white rounded-full hover:bg-emerald-600 transition-all text-sm">
+                                Guardar
+                            </button>
+                        </div>
+                    </div>
 
-                        <div class="space-y-6 mt-4">
-                            <div class="grid md:grid-cols-2 gap-6">
-                                <div>
-                                    <label for="nombreempleado" class="block text-sm font-medium text-gray-700 mb-1">Nombre completo</label>
-                                    <input type="text" id="nombreempleado" name="nombreempleado"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500"
-                                        value="<?= htmlspecialchars($empleado['nombreempleado'] ?? '') ?>">
-                                </div>
-                                <div>
-                                    <label for="phoneempleado" class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
-                                    <input type="tel" id="phoneempleado" name="phoneempleado"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500"
-                                        value="<?= htmlspecialchars($empleado['phoneempleado'] ?? '') ?>">
-                                </div>
-                                <div>
-                                    <label for="email_empleado" class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
-                                    <input type="email" id="email_empleado" name="email_empleado"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500"
-                                        value="<?= htmlspecialchars($empleado['email_empleado'] ?? '') ?>" readonly>
-                                    <p class="text-xs text-gray-500 mt-1">El correo electrónico no se puede modificar</p>
-                                </div>
-                                <div>
-                                    <label for="edad" class="block text-sm font-medium text-gray-700 mb-1">Edad</label>
-                                    <input type="text" id="edad" name="edad"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500"
-                                        value="<?= htmlspecialchars($empleado['edad'] ?? '') ?>">
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Foto de perfil</label>
-                                    <div class="flex items-center space-x-4">
-                                        <div class="h-20 w-20 rounded-full bg-gray-200 overflow-hidden">
-                                            <img id="uploadPreview" src="<?= isset($empleado['foto_de_perfil']) && !empty($empleado['foto_de_perfil']) ? $empleado['foto_de_perfil'] : '/assets/images/barbero1.webp' ?>" alt="Foto de perfil"
-                                                class="h-full w-full object-cover">
-                                        </div>
-                                        <label for="foto_perfil"
-                                            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 cursor-pointer transition-all">
-                                            Cambiar foto
-                                            <input type="file" id="foto_perfil" name="foto_perfil" class="hidden" accept="image/*">
-                                        </label>
-                                    </div>
-                                </div>
+                    <div class="space-y-5">
+                        <div class="grid md:grid-cols-2 gap-5">
+                            <div>
+                                <label for="nombreempleado" class="block text-sm font-medium text-gray-700 mb-1">Nombre completo</label>
+                                <input type="text" id="nombreempleado" name="nombreempleado"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                                    value="<?= htmlspecialchars($empleado['nombreempleado'] ?? '') ?>">
                             </div>
                             <div>
-                                <label for="descripcion" class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
-                                <textarea id="descripcion" name="descripcion" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500"><?= htmlspecialchars(trim($empleado['descripcion'] ?? '')) ?></textarea>
+                                <label for="phoneempleado" class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                                <input type="tel" id="phoneempleado" name="phoneempleado"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                                    value="<?= htmlspecialchars($empleado['phoneempleado'] ?? '') ?>">
+                            </div>
+                            <div>
+                                <label for="email_empleado" class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
+                                <input type="email" id="email_empleado" name="email_empleado"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                                    value="<?= htmlspecialchars($empleado['email_usuario'] ?? '') ?>">
+                            </div>
+                            <div>
+                                <label for="edad" class="block text-sm font-medium text-gray-700 mb-1">Edad</label>
+                                <input type="number" id="edad" name="edad"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                                    value="<?= htmlspecialchars($empleado['edad'] ?? '') ?>">
                             </div>
                         </div>
-                    </form>
-                </div>
+                        <div>
+                            <label for="descripcion" class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+                            <textarea id="descripcion" name="descripcion" rows="4" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"><?= htmlspecialchars($empleado['descripcion'] ?? '') ?></textarea>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </main>
+
 
     <!-- Footer -->
     <footer class="bg-black text-white py-12 mt-auto">
@@ -235,6 +300,21 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "empleado") {
         menuButton.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
         });
+
+
+
+        function previewImage(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            document.getElementById('preview').src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+    }
+}
+
+
 
         // Smooth scroll
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {

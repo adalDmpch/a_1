@@ -206,51 +206,6 @@
     </div>
 
 
-    <!-- Botón Flotante de Ayuda -->
-    <div class="fixed bottom-6 right-6 help-button group">
-        <button class="bg-black text-white p-3 rounded-full shadow-lg hover:bg-gray-800 transition-all">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-        </button>
-
-        <!-- Tooltip Ayuda -->
-        <div
-            class="help-tooltip absolute bottom-full right-0 mb-2 w-64 bg-white border border-gray-200 rounded-lg shadow-xl p-4">
-            <h4 class="font-heading font-semibold mb-3">Centro de Ayuda</h4>
-            <ul class="space-y-2 text-sm text-gray-600">
-                <li class="hover:bg-gray-50 p-2 rounded">
-                    <a href="#registro" class="flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                        Crear cuenta nueva
-                    </a>
-                </li>
-                <li class="hover:bg-gray-50 p-2 rounded">
-                    <a href="#reservas" class="flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        Cómo reservar
-                    </a>
-                </li>
-                <li class="hover:bg-gray-50 p-2 rounded">
-                    <a href="#contacto" class="flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                        Contactar soporte
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </div>
-
     <script>
         // Menú móvil
         const menuButton = document.getElementById('menuButton');

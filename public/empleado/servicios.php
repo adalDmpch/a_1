@@ -1,5 +1,6 @@
 <?php
 require '../../config/confg.php';
+session_start();
 
 // $stmt = $pdo->query("SELECT * FROM empleados");
 // $empleados = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -23,7 +24,6 @@ require '../../config/confg.php';
 // $stmt->execute();
 // $empleados = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-session_start();
 if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "empleado") {
     header("Location: ../public/LoginAdmin.php");
     exit();

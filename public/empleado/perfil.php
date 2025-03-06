@@ -116,7 +116,7 @@ if (!$empleado) {
             <div class="relative h-48 md:h-64 bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-t-2xl">
                 <div class="absolute -bottom-16 left-6 md:left-8">
                     <div class="h-32 w-32 rounded-full border-4 border-white bg-gray-200 overflow-hidden">
-                        <img src="../public/uploads/<?= htmlspecialchars(basename($empleado['foto_de_perfil'] ?? 'default.png')) ?>" alt="Foto de perfil"
+                        <img src="../uploads/<?= htmlspecialchars(basename($empleado['foto_de_perfil'] ?? 'default.png')) ?>" alt="Foto de perfil"
                              class="h-full w-full object-cover">
                     </div>
                 </div>

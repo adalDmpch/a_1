@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update_profile"])) {
         // Manejo de imagen de perfil (solo si se sube una nueva)
         if (!empty($_FILES['foto_de_perfil']['name']) && $_FILES['foto_de_perfil']['error'] === UPLOAD_ERR_OK) {
             $foto_nombre = basename($_FILES['foto_de_perfil']['name']);
-            $uploads_dir = '../public/uploads/'; // Usamos la carpeta "public/uploads"
+            $uploads_dir = '../uploads/'; // Usamos la carpeta "public/uploads"
 
             // Verificar si la carpeta 'uploads' existe dentro de 'public'
             // Ya no la creamos si existe

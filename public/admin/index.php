@@ -138,7 +138,40 @@ include_once '../templates/navbaradmin.php';
         </div>
     </div>
 </main>
-
+<script>
+        // Mejorar la confirmación de eliminación con SweetAlert2
+        document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const tipo = this.getAttribute('data-tipo');
+            const nombre = this.getAttribute('data-nombre');
+            const tipoCapitalizado = tipo.charAt(0).toUpperCase() + tipo.slice(1);
+            
+            Swal.fire({
+                title: `¿Eliminar ${tipo}?`,
+                html: `¿Estás seguro que deseas eliminar a <strong>${nombre}</strong>?<br>Esta acción no se puede deshacer.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#001A33',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '<i class="fas fa-trash-alt mr-1"></i> Sí, eliminar',
+                cancelButtonText: '<i class="fas fa-times mr-1"></i> Cancelar',
+                focusConfirm: false,
+                allowOutsideClick: () => !Swal.isLoading(),
+                showClass: {
+                    popup: 'animate__animated animate__fadeInDown'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = `../../actions/delete.php?id=${id}&tipo=${tipo}`;
+                }
+            });
+        });
+    });
+</script>
 <?php
 include_once '../templates/footeradmin.php';
 ?>

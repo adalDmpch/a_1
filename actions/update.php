@@ -65,28 +65,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
                 $email_empleado_actual = $empleado_actual['email_empleado'];
             
-                // Si el email cambió, verificar que exista en usuarios
+                // Si el email cambió, actualizarlo en la tabla usuarios y empleados
                 if (!empty($email_empleado_nuevo) && $email_empleado_nuevo !== $email_empleado_actual) {
-                    // Insertar el nuevo email en usuarios si no existe
-                    $stmt = $pdo->prepare("SELECT COUNT(*) FROM usuarios WHERE email_usuario = ?");
-                    $stmt->execute([$email_empleado_nuevo]);
-                    $existe_usuario = $stmt->fetchColumn();
-            
-                    if (!$existe_usuario) {
-                        if (!empty($contra_empleados)) {
-                            $hash_contra = password_hash($contra_empleados, PASSWORD_DEFAULT);
-                        } else {
-                            throw new Exception("Error: Debes ingresar una contraseña al cambiar el email.");
-                        }
-            
-                        $stmt = $pdo->prepare("INSERT INTO usuarios (email_usuario, password, rol) VALUES (?, ?, 'empleado')");
-                        $stmt->execute([$email_empleado_nuevo, $hash_contra]);
+                    // 1️⃣ Primero, eliminar temporalmente la relación en `empleados`
+                    $stmt = $pdo->prepare("UPDATE empleados SET email_empleado = NULL WHERE id = ?");
+                    $stmt->execute([$id]);
+
+                    // 2️⃣ Verificar si el email actual tiene un usuario vinculado
+                    $stmt = $pdo->prepare("SELECT id FROM usuarios WHERE email_usuario = ?");
+                    $stmt->execute([$email_empleado_actual]);
+                    $usuario_actual = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                    if ($usuario_actual) {
+                        // 3️⃣ Actualizar el email en la tabla usuarios
+                        $stmt = $pdo->prepare("UPDATE usuarios SET email_usuario = ? WHERE id = ?");
+                        $stmt->execute([$email_empleado_nuevo, $usuario_actual['id']]);
+                    } else {
+                        throw new Exception("Error: No se encontró un usuario vinculado al empleado.");
                     }
-            
-                    // Actualizar el email en empleados
+
+                    // 4️⃣ Volver a asignar el email en la tabla empleados
                     $stmt = $pdo->prepare("UPDATE empleados SET email_empleado = ? WHERE id = ?");
                     $stmt->execute([$email_empleado_nuevo, $id]);
                 }
+
+
             
                 // Si se proporciona una nueva contraseña, actualizarla en `usuarios`
                 if (!empty($contra_empleados)) {

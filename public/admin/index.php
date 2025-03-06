@@ -40,13 +40,20 @@ include_once '../templates/navbaradmin.php';
 <main class="container mx-auto p-6 flex-grow">
     <!-- Tabla de Negocios -->
     <div class="bg-gray-100 p-6 rounded-xl shadow-xl mt-8">
-        <h2 class="text-2xl font-bold mb-4 text-center text-bg-[#001A33]">
-            <i class="fas fa-store text-[#001A33] mr-2"></i> Mis Negocios
-        </h2>
+    <h2 class="text-2xl font-bold mb-4 text-center text-bg-[#001A33]">
+        <i class="fas fa-store text-[#001A33] mr-2"></i> Mis Negocios
+    </h2>
+    <div class="flex flex-wrap gap-3 mb-4">
         <a href="/a_1/public/admin/create_bussines.php" class="bg-[#001A33] text-white px-4 py-2 rounded-lg block text-left font-semibold hover:bg-[#001A33] transition w-max">
             <i class="fas fa-plus-circle mr-2"></i> Agregar Negocio
         </a>
-        <div class="overflow-x-auto mt-4">
+        <!-- Nuevo botón para métodos de pago -->
+        <a href="/a_1/public/admin/create_metodo_pago.php" class="bg-[#001A33] text-white px-4 py-2 rounded-lg block text-left font-semibold hover:bg-[#001A33] transition w-max">
+            <i class="fas fa-credit-card mr-2"></i> Gestionar Métodos de Pago
+        </a>
+    </div>
+
+    <div class="overflow-x-auto mt-4">
             <table class="w-full border-collapse bg-gray-200 text-black text-center rounded-lg shadow-lg overflow-hidden">
                 <thead class="bg-[#001A33] text-white">
                     <tr>

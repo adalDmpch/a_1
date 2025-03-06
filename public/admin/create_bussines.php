@@ -1,9 +1,14 @@
 <?php
+require '../../config/confg.php';
 session_start();
 if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "admin") {
-    header("Location: ../public/LoginAdmin.php");
+    header("Location: ../LoginAdmin.php");
     exit();
 }
+
+$stmt = $pdo->query("SELECT id, tipo FROM metodo_de_pago");
+$metodos_pago = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 include_once '../templates/headeradmin.php';
 include_once '../templates/navbaradmin.php';
 ?>
@@ -124,35 +129,16 @@ include_once '../templates/navbaradmin.php';
                     </div>
                     <!-- Input para seleccionar métodos de pago -->
                     <div class="bg-white p-4 rounded-lg shadow-md mb-4">
-                    <label for="metodo_de_pago_id" class="block text-gray-700 font-bold mb-2">Método de pago aceptado:</label>
-                    <div class="space-y-2">
-                        <!-- Radio buttons para método de pago (solo se puede seleccionar uno) -->
-                        <label class="inline-flex items-center">
-                        <input type="radio" name="metodo_de_pago_id" value="1" class="form-radio h-5 w-5 text-blue-600" checked>
-                        <span class="ml-2 text-gray-700">Efectivo</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                        <input type="radio" name="metodo_de_pago_id" value="2" class="form-radio h-5 w-5 text-blue-600">
-                        <span class="ml-2 text-gray-700">Tarjeta de débito</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                        <input type="radio" name="metodo_de_pago_id" value="3" class="form-radio h-5 w-5 text-blue-600">
-                        <span class="ml-2 text-gray-700">Tarjeta Credito</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                        <input type="radio" name="metodo_de_pago_id" value="2" class="form-radio h-5 w-5 text-blue-600">
-                        <span class="ml-2 text-gray-700">PayPal</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                        <input type="radio" name="metodo_de_pago_id" value="5" class="form-radio h-5 w-5 text-blue-600">
-                        <span class="ml-2 text-gray-700">Mercado Pago</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                        <input type="radio" name="metodo_de_pago_id" value="6" class="form-radio h-5 w-5 text-blue-600">
-                        <span class="ml-2 text-gray-700">Efectivo y Tarjeta</span>
-                        </label>
-                    </div>
-                    </div>
+    <label for="metodo_de_pago_id" class="block text-gray-700 font-bold mb-2">Método de pago aceptado:</label>
+    <div class="space-y-2">
+        <?php foreach ($metodos_pago as $metodo): ?>
+            <label class="inline-flex items-center">
+                <input type="radio" name="metodo_de_pago_id" value="<?= htmlspecialchars($metodo['id']) ?>" class="form-radio h-5 w-5 text-blue-600">
+                <span class="ml-2 text-gray-700"><?= htmlspecialchars($metodo['tipo']) ?></span>
+            </label>
+        <?php endforeach; ?>
+    </div>
+</div>
                     <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Guardar</button>
                 </form>
                 <a href="/a_1/public/admin/index.php" class="text-blue-500 mt-4 block">Volver</a>

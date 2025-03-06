@@ -15,7 +15,7 @@ try {
 
 session_start();
 if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "admin") {
-    header("Location: ../public/LoginAdmin.php");
+    header("Location: ../LoginAdmin.php");
     exit();
 }
 
@@ -65,7 +65,7 @@ include_once '../templates/navbaradmin.php';
     </div>
             </div>
 
-            <!-- Especialidad y Disponibilidad -->
+            <!-- metodo de pago y Disponibilidad -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <select name="disponibilidad" required class="input-field">
                     <option value="">Selecciona Disponibilidad</option>

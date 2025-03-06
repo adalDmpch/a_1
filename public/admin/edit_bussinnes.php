@@ -12,10 +12,12 @@ $negocio = $stmt->fetch();
 $servicios = explode(", ", $negocio['servicios']);
 $dias_operacion = explode(", ", $negocio['dias_operacion']);
 
+$stmt = $pdo->query("SELECT id, tipo FROM metodo_de_pago");
+$metodos_pago = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 session_start();
 if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "admin") {
-    header("Location: ../public/LoginAdmin.php");
+    header("Location: ../LoginAdmin.php");
     exit();
 }
 
@@ -103,20 +105,21 @@ include_once '../templates/navbaradmin.php';
 
     <!-- Recuperar y marcar el método de pago -->
     <div class="bg-white p-4 rounded-lg shadow-md mb-4">
-        <label for="metodo_de_pago_id" class="block text-gray-700 font-bold mb-2">Método de pago aceptado:</label>
-        <div class="space-y-2">
-            <?php
-            $metodos_pago = ['1' => 'Efectivo', '2' => 'Tarjeta de débito', '3' => 'Tarjeta Crédito', '4' => 'PayPal', '5' => 'Mercado Pago', '6' => 'Efectivo y Tarjeta'];
-            foreach ($metodos_pago as $id => $metodo) {
-                $checked = $negocio['metodo_de_pago_id'] == $id ? 'checked' : '';
-                echo "<label class='inline-flex items-center'>
-                        <input type='radio' name='metodo_de_pago_id' value='$id' class='form-radio h-5 w-5 text-blue-600' $checked>
-                        <span class='ml-2 text-gray-700'>$metodo</span>
-                      </label>";
-            }
+    <label for="metodo_de_pago_id" class="block text-gray-700 font-bold mb-2">Método de pago aceptado:</label>
+    <div class="space-y-2">
+        <?php foreach ($metodos_pago as $metodo): ?>
+            <?php 
+            // Verificar si este método es el que tiene el negocio actualmente para marcarlo como seleccionado
+            $checked = ($negocio['metodo_de_pago_id'] == $metodo['id']) ? 'checked' : '';
             ?>
-        </div>
+            <label class="inline-flex items-center">
+                <input type="radio" name="metodo_de_pago_id" value="<?= htmlspecialchars($metodo['id']) ?>" 
+                       class="form-radio h-5 w-5 text-blue-600" <?= $checked ?>>
+                <span class="ml-2 text-gray-700"><?= htmlspecialchars($metodo['tipo']) ?></span>
+            </label>
+        <?php endforeach; ?>
     </div>
+</div>
 
     <button type="submit" class="bg-blue-500 text-white p-2 rounded">Actualizar Negocio</button>
 </form>

@@ -15,7 +15,7 @@ try {
 
 session_start();
 if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "admin") {
-    header("Location: ../LoginAdmin.php");
+    header("Location: ../login.php");
     exit();
 }
 

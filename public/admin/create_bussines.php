@@ -2,10 +2,13 @@
 require '../../config/confg.php';
 session_start();
 if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "admin") {
-    header("Location: ../LoginAdmin.php");
+    header("Location: ../login.php");
     exit();
 }
 
+// Consulta para obtener todos los servicios ordenados por tipo
+$stmt = $pdo->query("SELECT id, tipo FROM servicios ORDER BY tipo ASC");
+$servicios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $stmt = $pdo->query("SELECT id, tipo FROM metodo_de_pago");
 $metodos_pago = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -83,50 +86,18 @@ include_once '../templates/navbaradmin.php';
                     </select>
                     <!-- Input para seleccionar servicios ofrecidos -->
                     <div class="bg-white p-4 rounded-lg shadow-md mb-4">
-                    <label for="servicios" class="block text-gray-700 font-bold mb-2">Servicios ofrecidos:</label>
-                    <div class="space-y-2">
-                        <label class="inline-flex items-center">
-                        <input type="checkbox" name="servicios[]" value="cortes" class="form-checkbox h-5 w-5 text-blue-600">
-                        <span class="ml-2 text-gray-700">Cortes de cabello</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                        <input type="checkbox" name="servicios[]" value="barberia" class="form-checkbox h-5 w-5 text-blue-600">
-                        <span class="ml-2 text-gray-700">Barbería</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                        <input type="checkbox" name="servicios[]" value="manicure" class="form-checkbox h-5 w-5 text-blue-600">
-                        <span class="ml-2 text-gray-700">Manicure</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                        <input type="checkbox" name="servicios[]" value="pedicure" class="form-checkbox h-5 w-5 text-blue-600">
-                        <span class="ml-2 text-gray-700">Pedicure</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                        <input type="checkbox" name="servicios[]" value="maquillaje" class="form-checkbox h-5 w-5 text-blue-600">
-                        <span class="ml-2 text-gray-700">Maquillaje</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                        <input type="checkbox" name="servicios[]" value="tratamientos_faciales" class="form-checkbox h-5 w-5 text-blue-600">
-                        <span class="ml-2 text-gray-700">Tratamientos faciales</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                        <input type="checkbox" name="servicios[]" value="depilacion" class="form-checkbox h-5 w-5 text-blue-600">
-                        <span class="ml-2 text-gray-700">Depilación</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                        <input type="checkbox" name="servicios[]" value="masajes" class="form-checkbox h-5 w-5 text-blue-600">
-                        <span class="ml-2 text-gray-700">Masajes</span>
-                        </label>
-                        <!-- Campo para agregar otro servicio personalizado -->
-                        <div class="mt-2 flex items-center">
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" name="servicios[]" value="otro" class="form-checkbox h-5 w-5 text-blue-600">
-                            <span class="ml-2 text-gray-700">Otro servicio:</span>
-                        </label>
-                        <input type="text" name="otro_servicio" class="ml-2 form-input px-2 py-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Especificar">
-                        </div>
-                    </div>
-                    </div>
+    <label for="servicios" class="block text-gray-700 font-bold mb-2">Servicios ofrecidos:</label>
+    <div class="space-y-2">
+        <?php if (empty($servicios)): ?>
+            <p class="text-gray-500 italic">No hay servicios disponibles en este momento.</p>
+        <?php else: ?>
+            <?php foreach ($servicios as $servicio): ?>
+                <label class="inline-flex items-center">
+                    <input type="checkbox" name="servicios[]" value="<?= $servicio['id'] ?>" class="form-checkbox h-5 w-5 text-blue-600">
+                    <span class="ml-2 text-gray-700"><?= htmlspecialchars($servicio['tipo']) ?></span>
+                </label>
+            <?php endforeach; ?>
+        <?php endif; ?>
                     <!-- Input para seleccionar métodos de pago -->
                     <div class="bg-white p-4 rounded-lg shadow-md mb-4">
     <label for="metodo_de_pago_id" class="block text-gray-700 font-bold mb-2">Método de pago aceptado:</label>

@@ -4,7 +4,7 @@ session_start();
 
 // Verificar autenticación del administrador
 if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "admin") {
-    header("Location: ../LoginAdmin.php");
+    header("Location: ../.php");
     exit();
 }
 

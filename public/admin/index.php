@@ -8,9 +8,15 @@ $stmt = $pdo->query("SELECT * FROM negocio");
 $negocios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $stmt = $pdo->prepare("
-    SELECT negocio.*, metodo_de_pago.tipo AS metodo_de_pago
-    FROM negocio
-    LEFT JOIN metodo_de_pago ON negocio.metodo_de_pago_id = metodo_de_pago.id
+    SELECT n.*, mp.tipo AS metodo_de_pago, 
+           (
+               SELECT COALESCE(STRING_AGG(s.tipo, ', '), '')
+               FROM negocio_servicios ns 
+               JOIN servicios s ON ns.servicio_id = s.id
+               WHERE ns.negocio_id = n.id
+           ) AS servicios
+    FROM negocio n
+    LEFT JOIN metodo_de_pago mp ON n.metodo_de_pago_id = mp.id
 ");
 $stmt->execute();
 $negocios = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -23,9 +29,13 @@ $stmt = $pdo->prepare("
 $stmt->execute();
 $empleados = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+
+
+
+
 session_start();
 if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "admin") {
-    header("Location: ../LoginAdmin.php");
+    header("Location: ../login.php");
     exit();
 }
 
@@ -50,6 +60,9 @@ include_once '../templates/navbaradmin.php';
         <!-- Nuevo botón para métodos de pago -->
         <a href="/a_1/public/admin/create_metodo_pago.php" class="bg-[#001A33] text-white px-4 py-2 rounded-lg block text-left font-semibold hover:bg-[#001A33] transition w-max">
             <i class="fas fa-credit-card mr-2"></i> Gestionar Métodos de Pago
+        </a>
+        <a href="/a_1/public/admin/servicio.php" class="bg-[#001A33] text-white px-4 py-2 rounded-lg block text-left font-semibold hover:bg-[#001A33] transition w-max">
+            <i class="fas fa-credit-card mr-2"></i> Gestionar Servicios
         </a>
     </div>
 
@@ -80,7 +93,8 @@ include_once '../templates/navbaradmin.php';
                         <td class="p-3 hidden lg:table-cell"><?= $negocio['dias_operacion'] ?></td>
                         <td class="p-3 hidden lg:table-cell"><?= $negocio['horas_operacion'] ?></td>
                         <td class="p-3 hidden lg:table-cell"><?= $negocio['horas_fin'] ?></td>
-                        <td class="p-3 hidden xl:table-cell"><?= $negocio['servicios'] ?></td>
+                        <td class="p-3 hidden xl:table-cell"><?= htmlspecialchars($negocio['servicios']) ?: 'No hay servicios' ?></td>
+
                         <td class="p-3">
                             <a href="/a_1/public/admin/edit_bussinnes.php?id=<?= $negocio['id'] ?>" class="text-green-600 font-bold icon-container inline-flex mr-1">
                                 <i class="fas fa-edit mr-1"></i> Editar

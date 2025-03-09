@@ -3,7 +3,7 @@ require '../../config/confg.php';
 
 session_start();
 if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "cliente") {
-    header("Location: ../LoginAdmin.php");
+    header("Location: ../login.php");
     exit();
 }
 // Obtener el user_id desde la sesión

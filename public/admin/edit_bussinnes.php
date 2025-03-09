@@ -8,20 +8,29 @@ $stmt = $pdo->prepare("SELECT * FROM negocio WHERE id = ?");
 $stmt->execute([$negocio_id]);
 $negocio = $stmt->fetch();
 
-// Recuperamos los días de operación y servicios ofrecidos
-$servicios = explode(", ", $negocio['servicios']);
+
+$stmt = $pdo->query("SELECT id, tipo FROM servicios");
+$todos_servicios = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$stmt = $pdo->prepare("SELECT servicio_id FROM negocio_servicios WHERE negocio_id = ?");
+$stmt->execute([$negocio_id]);
+$servicios_seleccionados = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
 $dias_operacion = explode(", ", $negocio['dias_operacion']);
 
+$stmt = $pdo->query("SELECT id, tipo FROM metodo_de_pago");
+$metodos_pago = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 session_start();
 if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "admin") {
-    header("Location: ../public/LoginAdmin.php");
+    header("Location: ../login.php");
     exit();
 }
 
 
 include_once '../templates/headeradmin.php';
 include_once '../templates/navbaradmin.php';
+include_once '../templates/mode.php';
 ?>
 
     <div class="flex items-center justify-center min-h-screen pt-4"> <!-- Cambié pt-4 a pt-0 aquí -->
@@ -91,44 +100,44 @@ include_once '../templates/navbaradmin.php';
     </select>
 <!-- Recuperar y marcar los servicios ofrecidos -->
 <div class="bg-white p-4 rounded-lg shadow-md mb-4">
-        <label for="servicios" class="block text-gray-700 font-bold mb-2">Servicios ofrecidos:</label>
-        <div class="space-y-2">
-            <?php
-            $todos_servicios = ['cortes', 'barberia', 'manicure', 'pedicure', 'maquillaje', 'tratamientos_faciales', 'depilacion', 'masajes'];
-            foreach ($todos_servicios as $servicio) {
-                $checked = in_array($servicio, $servicios) ? 'checked' : '';
-                echo "<label class='inline-flex items-center'>
-                        <input type='checkbox' name='servicios[]' value='$servicio' class='form-checkbox h-5 w-5 text-blue-600' $checked>
-                        <span class='ml-2 text-gray-700'>" . ucfirst($servicio) . "</span>
-                      </label>";
-            }
-            ?>
-            <div class="mt-2 flex items-center">
+    <label for="servicios" class="block text-gray-700 font-bold mb-2">Servicios ofrecidos:</label>
+    <div class="space-y-2">
+        <?php if (empty($todos_servicios)): ?>
+            <p class="text-gray-500 italic">No hay servicios disponibles en este momento.</p>
+        <?php else: ?>
+            <?php foreach ($todos_servicios as $servicio): ?>
+                <?php 
+                    // Verificar si este servicio está entre los seleccionados
+                    $checked = (!empty($servicios_seleccionados) && in_array($servicio['id'], $servicios_seleccionados)) ? 'checked' : '';
+                ?>
                 <label class="inline-flex items-center">
-                    <input type="checkbox" name="servicios[]" value="otro" class="form-checkbox h-5 w-5 text-blue-600">
-                    <span class="ml-2 text-gray-700">Otro servicio:</span>
+                    <input type="checkbox" name="servicios[]" value="<?= $servicio['id'] ?>" 
+                           class="form-checkbox h-5 w-5 text-blue-600" <?= $checked ?>>
+                    <span class="ml-2 text-gray-700"><?= htmlspecialchars($servicio['tipo']) ?></span>
                 </label>
-                <input type="text" name="otro_servicio" class="ml-2 form-input px-2 py-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Especificar" value="<?= in_array('otro', $servicios) ? '' : '' ?>">
-            </div>
-        </div>
-    </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </div> <!-- Add this closing div tag -->
+</div> <!-- Add this closing div tag -->
+
 
     <!-- Recuperar y marcar el método de pago -->
     <div class="bg-white p-4 rounded-lg shadow-md mb-4">
-        <label for="metodo_de_pago_id" class="block text-gray-700 font-bold mb-2">Método de pago aceptado:</label>
-        <div class="space-y-2">
-            <?php
-            $metodos_pago = ['1' => 'Efectivo', '2' => 'Tarjeta de débito', '3' => 'Tarjeta Crédito', '4' => 'PayPal', '5' => 'Mercado Pago', '6' => 'Efectivo y Tarjeta'];
-            foreach ($metodos_pago as $id => $metodo) {
-                $checked = $negocio['metodo_de_pago_id'] == $id ? 'checked' : '';
-                echo "<label class='inline-flex items-center'>
-                        <input type='radio' name='metodo_de_pago_id' value='$id' class='form-radio h-5 w-5 text-blue-600' $checked>
-                        <span class='ml-2 text-gray-700'>$metodo</span>
-                      </label>";
-            }
+    <label for="metodo_de_pago_id" class="block text-gray-700 font-bold mb-2">Método de pago aceptado:</label>
+    <div class="space-y-2">
+        <?php foreach ($metodos_pago as $metodo): ?>
+            <?php 
+            // Verificar si este método es el que tiene el negocio actualmente para marcarlo como seleccionado
+            $checked = ($negocio['metodo_de_pago_id'] == $metodo['id']) ? 'checked' : '';
             ?>
-        </div>
+            <label class="inline-flex items-center">
+                <input type="radio" name="metodo_de_pago_id" value="<?= htmlspecialchars($metodo['id']) ?>" 
+                       class="form-radio h-5 w-5 text-blue-600" <?= $checked ?>>
+                <span class="ml-2 text-gray-700"><?= htmlspecialchars($metodo['tipo']) ?></span>
+            </label>
+        <?php endforeach; ?>
     </div>
+</div>
 
     <button type="submit" class="bg-blue-500 text-white p-2 rounded">Actualizar Negocio</button>
 </form>

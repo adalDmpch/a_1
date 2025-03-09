@@ -4,7 +4,7 @@ require '../../config/confg.php';
 
 // Verificar si el usuario está logueado y tiene el rol correcto
 if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "empleado") {
-    header("Location: ../LoginAdmin.php");
+    header("Location: ../login.php");
     exit();
 }
 

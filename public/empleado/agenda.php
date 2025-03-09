@@ -3,7 +3,7 @@ require '../../config/confg.php';
 
 session_start();
 if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "empleado") {
-    header("Location: ../public/LoginAdmin.php");
+    header("Location: ../public/login.php");
     exit();
 }
 

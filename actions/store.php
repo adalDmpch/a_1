@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ubicaciondelnegocio = isset($_POST['ubicaciondelnegocio']) ? trim($_POST['ubicaciondelnegocio']) : null;
             $phonenegocio = isset($_POST['phonenegocio']) ? trim($_POST['phonenegocio']) : null;
             $emailnegocio = isset($_POST['emailnegocio']) ? trim($_POST['emailnegocio']) : null;
-            $servicios = isset($_POST['servicios']) ? implode(', ', $_POST['servicios']) : null;
+            
             
             $dias_operacion = isset($_POST['dias_operacion']) ? implode(', ', $_POST['dias_operacion']) : null;
             $horas_operacion = isset($_POST['horas_operacion']) ? trim($_POST['horas_operacion']) : null;
@@ -39,8 +39,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             try {
-                $stmt = $pdo->prepare("INSERT INTO negocio (nombrenegocio, tipodenegocio, ubicaciondelnegocio, phonenegocio, emailnegocio, servicios, logo, dias_operacion, horas_operacion, horas_fin, metodo_de_pago_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$nombrenegocio, $tipodenegocio, $ubicaciondelnegocio, $phonenegocio, $emailnegocio, $servicios, $foto_destinoo, $dias_operacion, $horas_operacion, $horas_fin, $metodo_de_pago_id]);
+                $stmt = $pdo->prepare("INSERT INTO negocio (nombrenegocio, tipodenegocio, ubicaciondelnegocio, phonenegocio, emailnegocio, logo, dias_operacion, horas_operacion, horas_fin, metodo_de_pago_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$nombrenegocio, $tipodenegocio, $ubicaciondelnegocio, $phonenegocio, $emailnegocio, $foto_destinoo, $dias_operacion, $horas_operacion, $horas_fin, $metodo_de_pago_id]);
             } catch (PDOException $e) {
                 die("Error en la base de datos: " . $e->getMessage());
             }

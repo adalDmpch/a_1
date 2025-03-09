@@ -3,7 +3,7 @@ require '../../config/confg.php';
 
 session_start();
 if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "admin") {
-    header("Location: ../public/LoginAdmin.php");
+    header("Location: ../login.php");
     exit();
 }
 
@@ -37,6 +37,7 @@ try {
 
 include_once '../templates/headeradmin.php';
 include_once '../templates/navbaradmin.php';
+include_once '../templates/mode.php';
 ?>
 
 

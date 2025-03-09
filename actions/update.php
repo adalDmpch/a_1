@@ -12,24 +12,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ubicaciondelnegocio = isset($_POST['ubicaciondelnegocio']) ? trim($_POST['ubicaciondelnegocio']) : null;
             $phonenegocio = isset($_POST['phonenegocio']) ? trim($_POST['phonenegocio']) : null;
             $emailnegocio = isset($_POST['emailnegocio']) ? trim($_POST['emailnegocio']) : null;
-            $servicios = isset($_POST['servicios']) ? implode(', ', $_POST['servicios']) : null;
+            
             $logo = isset($_POST['logo']) ? trim($_POST['logo']) : null;
             $dias_operacion = isset($_POST['dias_operacion']) ? implode(', ', $_POST['dias_operacion']) : null;
             $horas_operacion = isset($_POST['horas_operacion']) ? trim($_POST['horas_operacion']) : null;
             $horas_fin = isset($_POST['horas_fin']) ? trim($_POST['horas_fin']) : null;
             $metodo_de_pago_id = isset($_POST['metodo_de_pago_id']) ? intval($_POST['metodo_de_pago_id']) : null;
 
-            if (!$id || !$nombrenegocio || !$tipodenegocio || !$ubicaciondelnegocio || !$phonenegocio || !$emailnegocio || !$servicios || !$dias_operacion || !$horas_operacion || !$horas_fin || !$metodo_de_pago_id) {
-                die("Error: Todos los campos son obligatorios.");
+            // Obtención de los servicios seleccionados
+            $servicios = isset($_POST['servicios']) ? $_POST['servicios'] : [];
+
+            if (!$id || !$nombrenegocio || !$tipodenegocio || !$ubicaciondelnegocio || !$phonenegocio || !$emailnegocio || !$dias_operacion || !$horas_operacion || !$horas_fin || !$metodo_de_pago_id || empty($servicios)) {
+                die("Error: Todos los campos son obligatorios, incluidos los servicios.");
             }
 
             try {
-                $stmt = $pdo->prepare("UPDATE negocio SET nombrenegocio = ?, tipodenegocio = ?, ubicaciondelnegocio = ?, phonenegocio = ?, emailnegocio = ?, servicios = ?, dias_operacion = ?, horas_operacion = ?, horas_fin = ?, metodo_de_pago_id = ? WHERE id = ?");
-                $stmt->execute([$nombrenegocio, $tipodenegocio, $ubicaciondelnegocio, $phonenegocio, $emailnegocio, $servicios, $dias_operacion, $horas_operacion, $horas_fin, $metodo_de_pago_id, $id]);
-
+                $pdo->beginTransaction();
+        
+                // Actualizar los datos del negocio
+                $stmt = $pdo->prepare("UPDATE negocio SET nombrenegocio = ?, tipodenegocio = ?, ubicaciondelnegocio = ?, phonenegocio = ?, emailnegocio = ?, dias_operacion = ?, horas_operacion = ?, horas_fin = ?, metodo_de_pago_id = ? WHERE id = ?");
+                $stmt->execute([$nombrenegocio, $tipodenegocio, $ubicaciondelnegocio, $phonenegocio, $emailnegocio, $dias_operacion, $horas_operacion, $horas_fin, $metodo_de_pago_id, $id]);
+        
+                // Eliminar los servicios actuales del negocio
+                $stmt = $pdo->prepare("DELETE FROM negocio_servicios WHERE negocio_id = ?");
+                $stmt->execute([$id]);
+        
+                // Insertar los nuevos servicios seleccionados
+                $stmt = $pdo->prepare("INSERT INTO negocio_servicios (negocio_id, servicio_id) VALUES (?, ?)");
+                foreach ($servicios as $servicio_id) {
+                    $stmt->execute([$id, $servicio_id]);
+                }
+        
+                $pdo->commit();
                 header("Location: ../public/admin/index.php");
                 exit;
+        
             } catch (PDOException $e) {
+                $pdo->rollBack(); // Revertir en caso de error
                 die("Error en la base de datos: " . $e->getMessage());
             }
             break;

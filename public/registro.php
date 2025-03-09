@@ -6,10 +6,7 @@ require '../config/confg.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
-        $dsn = "pgsql:host=localhost;dbname=estetica";
-        $usuario = "postgres";
-        $contraseña = "password";
-        $conexion = new PDO($dsn, $usuario, $contraseña, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+
 
         // Recoger datos del formulario
         $nombre = $_POST["nombre"];
@@ -22,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // **Verificar si el usuario ya existe**
         $query_check = "SELECT id FROM usuarios WHERE email_usuario = :email";
-        $stmt = $conexion->prepare($query_check);
+        $stmt = $pdo->prepare($query_check);
         $stmt->bindValue(':email', $email, PDO::PARAM_STR);
         $stmt->execute();
 
@@ -56,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Insertamos primero el usuario sin cliente_id
         $query_insert_user = "INSERT INTO usuarios (email_usuario, password, rol, activo) 
                               VALUES (:email, :password, 'cliente', true) RETURNING id";
-        $stmt = $conexion->prepare($query_insert_user);
+        $stmt = $pdo->prepare($query_insert_user);
         $stmt->bindValue(':email', $email, PDO::PARAM_STR);
         $stmt->bindValue(':password', $password, PDO::PARAM_STR);
         $stmt->execute();
@@ -65,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Insertamos el cliente
         $query_insert_cliente = "INSERT INTO cliente (nombre, fecha, genero, email_cliente, phone, address, foto_de_perfil) 
                                  VALUES (:nombre, :fecha, :genero, :email, :tel, :direccion, :foto_de_perfil) RETURNING id";
-        $stmt = $conexion->prepare($query_insert_cliente);
+        $stmt = $pdo->prepare($query_insert_cliente);
         $stmt->bindValue(':nombre', $nombre, PDO::PARAM_STR);
         $stmt->bindValue(':fecha', $fecha, PDO::PARAM_STR);
         $stmt->bindValue(':genero', $genero, PDO::PARAM_STR);
@@ -78,7 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Asociamos cliente_id con el usuario
         $query_update_user = "UPDATE usuarios SET cliente_id = :cliente_id WHERE id = :usuario_id";
-        $stmt = $conexion->prepare($query_update_user);
+        $stmt = $pdo->prepare($query_update_user);
         $stmt->bindValue(':cliente_id', $cliente_id, PDO::PARAM_INT);
         $stmt->bindValue(':usuario_id', $usuario_id, PDO::PARAM_INT);
         $stmt->execute();
@@ -168,13 +165,17 @@ if (isset($_SESSION['mensaje'])) {
                         
                     <!-- Imagen de perfil -->
                     <div class="py-4 flex flex-col items-center">
-                        <div class="relative group">
-                            <img id="preview" src="" alt="Previsualización" class="w-32 h-32 rounded-full object-cover border-4 border-gray-200 bg-black bg-opacity-40" />
+                        <div class="relative group w-32 h-32 rounded-full border-4 border-gray-200 bg-black bg-opacity-40 flex items-center justify-center">
+                            <img id="preview" src="" alt="Foto de perfil" class="w-full h-full rounded-full object-cover hidden" onerror="this.classList.add('hidden')" onload="this.classList.remove('hidden')" />
+                            <span id="alt-text" class="text-gray-200 text-sm absolute">Foto de perfil</span>
                             <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                                <label   for ="foto_de_perfil" class="text-white px-4 py-2 rounded-lg cursor-pointer">
-                                    Cambiar foto
+                                <label for="foto_de_perfil" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-50 rounded-full transition-all duration-200 cursor-pointer">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white opacity-0 group-hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
                                 </label>
-                            </div>
+                            </div>  
                         </div>
                         <input type="file" id="foto_de_perfil" name="foto_de_perfil" accept="image/*" class="hidden" onchange="previewImage(event)" />
                     </div>
@@ -273,13 +274,19 @@ if (isset($_SESSION['mensaje'])) {
     <script>
         function previewImage(event) {
             const file = event.target.files[0];
+            const preview = document.getElementById('preview');
+            const altText = document.getElementById('alt-text'); // Capturar el texto alternativo
+
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function (e) {
-                    document.getElementById('preview').src = e.target.result;
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden'); // Mostrar imagen
+                    if (altText) altText.classList.add('hidden'); // Ocultar el texto
                 }
                 reader.readAsDataURL(file);
             }
         }
+
     </script>
 </html>

@@ -122,8 +122,9 @@
                 </div>
 
                 <div class="hidden md:flex items-center space-x-8">
-                    <a href="#ayuda" class="text-gray-300 hover:text-white transition-colors">Ayuda</a>
-                    <a href="reserva" class="bg-emerald-600 text-white px-6 py-2 rounded-full hover:bg-emerald-700 transition-all">
+                    <a href="#ayuda" class="text-gray-600 hover:text-black">Ayuda</a>
+                    <a href=""
+                        class="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-all">
                         Reservar
                     </a>
                 </div>
@@ -180,7 +181,8 @@
                         Regístrate ahora y obtén un 20% de descuento en tu primer servicio
                     </p>
                     <div class="flex items-center gap-4">
-                        <a href="../public/cliente/registro.php" class="bg-emerald-600 text-white px-4 py-2 rounded-full hover:bg-emerald-700 transition-all">
+                        <a href="../public/registro.php"
+                            class="bg-white text-black px-4 py-2 rounded-full hover:bg-gray-100 transition-all">
                             Crear Cuenta
                         </a>
                         <span class="text-sm text-gray-400">Válido por 7 días</span>

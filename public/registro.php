@@ -144,7 +144,7 @@ if (isset($_SESSION['mensaje'])) {
                 </div>
                 <div class="hidden md:flex items-center space-x-6">
                     <a href="#ayuda" class="text-gray-600 hover:text-gray-900">Asistencia</a>
-                    <a href="#login" class="bg-gray-900 text-white px-5 py-2 rounded-full hover:bg-gray-800">Acceder</a>
+                    <a href="../public/login.php" class="bg-gray-900 text-white px-5 py-2 rounded-full hover:bg-gray-800">Acceder</a>
                 </div>
             </div>
         </div>

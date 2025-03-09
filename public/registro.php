@@ -273,20 +273,20 @@ if (isset($_SESSION['mensaje'])) {
     </footer>
     <script>
         function previewImage(event) {
-    const file = event.target.files[0];
-    const preview = document.getElementById('preview');
-    const altText = document.getElementById('alt-text'); // Capturar el texto alternativo
+            const file = event.target.files[0];
+            const preview = document.getElementById('preview');
+            const altText = document.getElementById('alt-text'); // Capturar el texto alternativo
 
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            preview.src = e.target.result;
-            preview.classList.remove('hidden'); // Mostrar imagen
-            if (altText) altText.classList.add('hidden'); // Ocultar el texto
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden'); // Mostrar imagen
+                    if (altText) altText.classList.add('hidden'); // Ocultar el texto
+                }
+                reader.readAsDataURL(file);
+            }
         }
-        reader.readAsDataURL(file);
-    }
-}
 
     </script>
 </html>

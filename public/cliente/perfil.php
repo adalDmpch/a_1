@@ -132,8 +132,9 @@ if (!$cliente) {
         <div class="w-full max-w-md mx-auto space-y-6">
             <!-- Profile Card -->
             <div class="bg-white shadow-lg rounded-xl p-8 text-center flex flex-col items-center">
-                <img src="/a_1/public/cliente/uploads/<?= htmlspecialchars(basename($cliente['foto_de_perfil'] ?? 'default.png')) ?>" alt="Foto de perfil"
+                <img src="../uploads/<?= htmlspecialchars(basename($cliente['foto_de_perfil'] ?? 'default.png')) ?>" alt="Foto de perfil"
                     class="w-40 h-40 rounded-full object-cover mb-6 shadow-xl border-4 border-emerald-100">
+                    
                 <h2 class="text-3xl font-bold text-gray-900 mb-3"> <?= htmlspecialchars($cliente['nombre'] ?? 'Nombre no disponible') ?></h2>
                 <span class="bg-emerald-100 text-emerald-700 px-4 py-2 rounded-full text-sm font-semibold">
                     Miembro Premium

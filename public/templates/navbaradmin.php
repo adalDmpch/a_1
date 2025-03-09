@@ -1,8 +1,8 @@
 <?php
 // templates/navbaradmin.php
+include_once '../templates/mode.php';
 ?>
 <!-- Navbar -->
-
 <style>
     /* Añadir a tus estilos existentes */
     #mobileMenu {
@@ -39,7 +39,7 @@
                     <i class="fas fa-home text-xl mr-2 text-green-700 group-hover:text-green-500"></i>
                     <span class="text-green-700 group-hover:text-green-500">Inicio</span>
                 </a>
-                <a href="perfil.html" class="icon-container rotate-effect">
+                <a href="perfiladmin.php" class="icon-container rotate-effect">
                     <i class="fas fa-user-cog text-xl mr-2 text-green-700"></i>
                     <span class="text-green-700">Mi Perfil</span>
                 </a>
@@ -56,7 +56,7 @@
                     <i class="fas fa-home text-xl mr-2 text-green-700"></i>
                     <span class="text-green-700 hover:text-green-500">Inicio</span>
                 </a>
-                <a href="perfil.html" class="flex items-center py-2">
+                <a href="perfiladmin.php" class="flex items-center py-2">
                     <i class="fas fa-user-cog text-xl mr-2 text-green-700"></i>
                     <span class="text-green-700">Mi Perfil</span>
                 </a>
@@ -90,3 +90,4 @@
         }
     });
 </script>
+

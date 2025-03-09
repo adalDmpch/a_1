@@ -2,6 +2,7 @@
 // templates/headeradmin.php
 // Recibir título de página como parámetro
 $pageTitle = $pageTitle ?? 'Bella Hair';
+include_once '../templates/mode.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">

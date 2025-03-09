@@ -57,9 +57,9 @@ if (!empty($searchTerm)) {
     $empParams[] = "%$searchTerm%";
 }
 
-// Pagination for employees
+// Pagination for employees - MODIFIED to 4 per page
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$perPage = 10; // Number of employees per page
+$perPage = 4; // Changed from 10 to 4 employees per page
 $totalEmployeesStmt = $pdo->prepare(str_replace("SELECT e.*, n.nombrenegocio", "SELECT COUNT(*)", $employeeQuery));
 $totalEmployeesStmt->execute($empParams);
 $totalEmployees = $totalEmployeesStmt->fetchColumn();
@@ -78,10 +78,12 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "admin") {
 
 include_once '../templates/headeradmin.php';
 include_once '../templates/navbaradmin.php';
+include_once '../templates/mode.php';
 ?>
 
 <!-- Contenido Principal -->
 <main class="container mx-auto p-6 flex-grow bg-gray-50">
+    
     <!-- Header section with title and search -->
     <div class="bg-white p-6 rounded-xl shadow-md mb-8 border-l-4 border-green-700">
         <h1 class="text-3xl font-bold text-green-800 mb-4">Panel de Administración</h1>
@@ -350,7 +352,7 @@ include_once '../templates/navbaradmin.php';
             </table>
         </div>
         
-        <!-- Pagination -->
+        <!-- Pagination - Updated to show 4 employees per page -->
         <?php if ($totalPages > 1): ?>
         <div class="flex justify-between items-center mt-6">
             <div class="text-sm text-gray-500">
@@ -365,6 +367,7 @@ include_once '../templates/navbaradmin.php';
                 <?php endif; ?>
                 
                 <?php 
+                // Show fewer page numbers if there are many pages
                 $startPage = max(1, $page - 2);
                 $endPage = min($totalPages, $startPage + 4);
                 if ($endPage - $startPage < 4) {

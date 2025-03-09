@@ -37,6 +37,7 @@ try {
 
 include_once '../templates/headeradmin.php';
 include_once '../templates/navbaradmin.php';
+include_once '../templates/mode.php';
 ?>
 
 

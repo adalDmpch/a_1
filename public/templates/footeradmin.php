@@ -1,5 +1,6 @@
 <?php
 // templates/footeradmin.php
+include_once '../templates/mode.php';
 ?>
 <footer class="bg-green-100/90 text-green-700 p-4 text-center mt-auto shadow-lg border-t border-green-200">
     <p>

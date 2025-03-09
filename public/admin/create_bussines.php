@@ -14,6 +14,7 @@ $metodos_pago = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 include_once '../templates/headeradmin.php';
 include_once '../templates/navbaradmin.php';
+include_once '../templates/mode.php';
 ?>
 
 <!-- Estructura de página modificada para que el footer quede abajo -->

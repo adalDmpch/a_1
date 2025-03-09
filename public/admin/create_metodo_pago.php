@@ -13,6 +13,7 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "admin") {
 
 include_once '../templates/headeradmin.php';
 include_once '../templates/navbaradmin.php';
+include_once '../templates/mode.php';
 ?>
 
 <!-- Contenido Principal -->

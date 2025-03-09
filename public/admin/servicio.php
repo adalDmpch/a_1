@@ -19,7 +19,7 @@ include_once '../templates/navbaradmin.php';
 <main class="container mx-auto p-6 flex-grow">
     <!-- Encabezado de la página -->
     <div class="flex items-center justify-between mb-6">
-        <h1 class="text-3xl font-bold text-[#001A33]">
+        <h1 class="text-3xl font-bold text-[#0F5132]">
             <i class="fas fa-concierge-bell mr-2"></i> Gestión de Servicios
         </h1>
         <a href="/a_1/public/admin/index.php" class="bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-700 transition">
@@ -28,8 +28,8 @@ include_once '../templates/navbaradmin.php';
     </div>
 
     <!-- Formulario para agregar nuevo servicio -->
-    <div class="bg-white p-6 rounded-xl shadow-xl mb-8 border-l-4 border-[#001A33]">
-        <h2 class="text-2xl font-bold text-[#001A33] mb-4">
+    <div class="bg-white p-6 rounded-xl shadow-xl mb-8 border-l-4 border-[#0F5132]">
+        <h2 class="text-2xl font-bold text-[#0F5132] mb-4">
             <i class="fas fa-plus-circle mr-2"></i> Agregar Nuevo Servicio
         </h2>
         <form action="../../actions/save_service.php" method="POST" class="max-w-lg">
@@ -38,7 +38,7 @@ include_once '../templates/navbaradmin.php';
                     Tipo de Servicio:
                 </label>
                 <input type="text" name="nuevo_servicio" id="nuevo_servicio" required 
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#001A33] focus:border-[#001A33] transition"
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0F5132] focus:border-[#0F5132] transition"
                     placeholder="Ej: Corte de cabello, Manicure, Tratamiento facial...">
             </div>
 
@@ -47,7 +47,7 @@ include_once '../templates/navbaradmin.php';
                     Duración (minutos):
                 </label>
                 <input type="number" name="duracion" id="duracion" required 
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#001A33] focus:border-[#001A33] transition"
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0F5132] focus:border-[#0F5132] transition"
                     placeholder="Ej: 30, 60, 90...">
             </div>
 
@@ -56,11 +56,11 @@ include_once '../templates/navbaradmin.php';
                     Precio ($):
                 </label>
                 <input type="number" step="0.01" name="precio" id="precio" required 
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#001A33] focus:border-[#001A33] transition"
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0F5132] focus:border-[#0F5132] transition"
                     placeholder="Ej: 25.00, 50.00, 75.50...">
             </div>
             
-            <button type="submit" class="bg-[#001A33] text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-800 transition 
+            <button type="submit" class="bg-[#0F5132] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#0A3622] transition 
                 flex items-center justify-center w-full md:w-auto">
                 <i class="fas fa-save mr-2"></i> Guardar Servicio
             </button>
@@ -69,18 +69,18 @@ include_once '../templates/navbaradmin.php';
 
     <!-- Tabla de servicios existentes -->
     <div class="bg-white p-6 rounded-xl shadow-xl mb-8">
-        <h2 class="text-2xl font-bold text-[#001A33] mb-4">
+        <h2 class="text-2xl font-bold text-[#0F5132] mb-4">
             <i class="fas fa-list mr-2"></i> Servicios Disponibles
         </h2>
         
         <?php if (empty($servicios)): ?>
-            <div class="bg-blue-100 text-blue-700 p-4 rounded-lg">
+            <div class="bg-green-100 text-green-700 p-4 rounded-lg">
                 <i class="fas fa-info-circle mr-2"></i> No hay servicios registrados. Agrega uno nuevo utilizando el formulario de arriba.
             </div>
         <?php else: ?>
             <div class="overflow-x-auto">
                 <table class="w-full border-collapse bg-gray-50 text-left rounded-lg shadow-lg overflow-hidden">
-                    <thead class="bg-[#001A33] text-white">
+                    <thead class="bg-[#0F5132] text-white">
                         <tr>
                             <th class="p-3">Tipo de Servicio</th>
                             <th class="p-3">Duración (min)</th>
@@ -90,7 +90,7 @@ include_once '../templates/navbaradmin.php';
                     </thead>
                     <tbody>
                         <?php foreach ($servicios as $servicio): ?>
-                        <tr class="border-b border-gray-200 hover:bg-gray-100 transition">
+                        <tr class="border-b border-gray-200 hover:bg-green-50 transition">
                             <td class="p-3 font-medium"><?= $servicio['tipo'] ?></td>
                             <td class="p-3"><?= $servicio['duracion'] ?></td>
                             <td class="p-3">$<?= number_format($servicio['precio'], 2) ?></td>
@@ -119,7 +119,7 @@ include_once '../templates/navbaradmin.php';
 <div id="editModalService" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center hidden">
     <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-4">
         <div class="flex justify-between items-center mb-4 pb-2 border-b">
-            <h3 class="text-xl font-bold text-[#001A33]">
+            <h3 class="text-xl font-bold text-[#0F5132]">
                 <i class="fas fa-edit mr-2"></i> Editar Servicio
             </h3>
             <button onclick="closeEditModalService()" class="text-gray-600 hover:text-red-600 transition">
@@ -134,7 +134,7 @@ include_once '../templates/navbaradmin.php';
                     Tipo de Servicio:
                 </label>
                 <input type="text" id="editTipoService" name="tipo" required 
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#001A33] focus:border-[#001A33] transition">
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0F5132] focus:border-[#0F5132] transition">
             </div>
 
             <div class="mb-4">
@@ -142,7 +142,7 @@ include_once '../templates/navbaradmin.php';
                     Duración (minutos):
                 </label>
                 <input type="number" id="editDuracionService" name="duracion" required 
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#001A33] focus:border-[#001A33] transition">
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0F5132] focus:border-[#0F5132] transition">
             </div>
 
             <div class="mb-4">
@@ -150,7 +150,7 @@ include_once '../templates/navbaradmin.php';
                     Precio ($):
                 </label>
                 <input type="number" step="0.01" id="editPrecioService" name="precio" required 
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#001A33] focus:border-[#001A33] transition">
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0F5132] focus:border-[#0F5132] transition">
             </div>
             
             <div class="flex justify-end space-x-3 mt-4">
@@ -158,15 +158,13 @@ include_once '../templates/navbaradmin.php';
                     class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">
                     <i class="fas fa-times mr-2"></i> Cancelar
                 </button>
-                <button type="submit" class="px-4 py-2 bg-[#001A33] text-white rounded-lg hover:bg-blue-800 transition">
+                <button type="submit" class="px-4 py-2 bg-[#0F5132] text-white rounded-lg hover:bg-[#0A3622] transition">
                     <i class="fas fa-save mr-2"></i> Guardar Cambios
                 </button>
             </div>
         </form>
     </div>
 </div>
-
-
 
 <!-- Script para las funcionalidades -->
 <script>
@@ -190,7 +188,7 @@ function confirmDelete(id, nombre) {
         html: `¿Estás seguro que deseas eliminar el servicio <strong>${nombre}</strong>?<br>Esta acción no se puede deshacer.`,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#001A33',
+        confirmButtonColor: '#0F5132',
         cancelButtonColor: '#d33',
         confirmButtonText: '<i class="fas fa-trash-alt mr-1"></i> Sí, eliminar',
         cancelButtonText: '<i class="fas fa-times mr-1"></i> Cancelar',

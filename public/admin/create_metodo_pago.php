@@ -19,17 +19,17 @@ include_once '../templates/navbaradmin.php';
 <main class="container mx-auto p-6 flex-grow">
     <!-- Encabezado de la página -->
     <div class="flex items-center justify-between mb-6">
-        <h1 class="text-3xl font-bold text-[#001A33]">
+        <h1 class="text-3xl font-bold text-green-800">
             <i class="fas fa-credit-card mr-2"></i> Gestión de Métodos de Pago
         </h1>
-        <a href="/a_1/public/admin/index.php" class="bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-700 transition">
+        <a href="/a_1/public/admin/index.php" class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition">
             <i class="fas fa-arrow-left mr-2"></i> Volver 
         </a>
     </div>
 
     <!-- Formulario para agregar nuevo método de pago -->
-    <div class="bg-white p-6 rounded-xl shadow-xl mb-8 border-l-4 border-[#001A33]">
-        <h2 class="text-2xl font-bold text-[#001A33] mb-4">
+    <div class="bg-white p-6 rounded-xl shadow-xl mb-8 border-l-4 border-green-700">
+        <h2 class="text-2xl font-bold text-green-800 mb-4">
             <i class="fas fa-plus-circle mr-2"></i> Agregar Nuevo Método de Pago
         </h2>
         <form action="../../actions/save_pay.php" method="POST" class="max-w-lg">
@@ -38,11 +38,11 @@ include_once '../templates/navbaradmin.php';
                     Nombre del Método de Pago:
                 </label>
                 <input type="text" name="nuevo_metodo_pago" id="nuevo_metodo_pago" required 
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#001A33] focus:border-[#001A33] transition"
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600 transition"
                     placeholder="Ej: Tarjeta de Crédito, PayPal, Efectivo...">
             </div>
             
-            <button type="submit" class="bg-[#001A33] text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-800 transition 
+            <button type="submit" class="bg-green-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-800 transition 
                 flex items-center justify-center w-full md:w-auto">
                 <i class="fas fa-save mr-2"></i> Guardar Método de Pago
             </button>
@@ -51,32 +51,30 @@ include_once '../templates/navbaradmin.php';
 
     <!-- Tabla de métodos de pago existentes -->
     <div class="bg-white p-6 rounded-xl shadow-xl mb-8">
-        <h2 class="text-2xl font-bold text-[#001A33] mb-4">
+        <h2 class="text-2xl font-bold text-green-800 mb-4">
             <i class="fas fa-list mr-2"></i> Métodos de Pago Disponibles
         </h2>
         
         <?php if (empty($metodos_pago)): ?>
-            <div class="bg-blue-100 text-blue-700 p-4 rounded-lg">
+            <div class="bg-green-100 text-green-700 p-4 rounded-lg">
                 <i class="fas fa-info-circle mr-2"></i> No hay métodos de pago registrados. Agrega uno nuevo utilizando el formulario de arriba.
             </div>
         <?php else: ?>
             <div class="overflow-x-auto">
                 <table class="w-full border-collapse bg-gray-50 text-left rounded-lg shadow-lg overflow-hidden">
-                    <thead class="bg-[#001A33] text-white">
+                    <thead class="bg-green-700 text-white">
                         <tr>
-                            
                             <th class="p-3">Método de Pago</th>
                             <th class="p-3 text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($metodos_pago as $metodo): ?>
-                        <tr class="border-b border-gray-200 hover:bg-gray-100 transition">
-                            
+                        <tr class="border-b border-gray-200 hover:bg-green-50 transition">
                             <td class="p-3 font-medium"><?= $metodo['tipo'] ?></td>
                             <td class="p-3 text-center">
                                 <button onclick="openEditModal(<?= $metodo['id'] ?>, '<?= $metodo['tipo'] ?>')" 
-                                    class="bg-gray-600 text-white px-3 py-1 rounded inline-flex items-center mr-2 hover:bg-gray-900 transition">
+                                    class="bg-green-600 text-white px-3 py-1 rounded inline-flex items-center mr-2 hover:bg-green-700 transition">
                                     <i class="fas fa-edit mr-1"></i> Editar
                                 </button>
                                 <button onclick="confirmDelete(<?= $metodo['id'] ?>, '<?= $metodo['tipo'] ?>')" 
@@ -97,7 +95,7 @@ include_once '../templates/navbaradmin.php';
 <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center hidden animate__animated animate__fadeIn">
     <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-4 animate__animated animate__zoomIn">
         <div class="flex justify-between items-center mb-4 pb-2 border-b">
-            <h3 class="text-xl font-bold text-[#001A33]">
+            <h3 class="text-xl font-bold text-green-800">
                 <i class="fas fa-edit mr-2"></i> Editar Método de Pago
             </h3>
             <button onclick="closeEditModal()" class="text-gray-600 hover:text-red-600 transition">
@@ -112,7 +110,7 @@ include_once '../templates/navbaradmin.php';
                     Nombre del Método de Pago:
                 </label>
                 <input type="text" id="editTipo" name="tipo" required 
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#001A33] focus:border-[#001A33] transition">
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600 transition">
             </div>
             
             <div class="flex justify-end space-x-3 mt-4">
@@ -120,7 +118,7 @@ include_once '../templates/navbaradmin.php';
                     class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">
                     <i class="fas fa-times mr-2"></i> Cancelar
                 </button>
-                <button type="submit" class="px-4 py-2 bg-[#001A33] text-white rounded-lg hover:bg-blue-800 transition">
+                <button type="submit" class="px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 transition">
                     <i class="fas fa-save mr-2"></i> Guardar Cambios
                 </button>
             </div>
@@ -148,7 +146,7 @@ include_once '../templates/navbaradmin.php';
             html: `¿Estás seguro que deseas eliminar el método de pago <strong>${nombre}</strong>?<br>Esta acción no se puede deshacer.`,
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#001A33',
+            confirmButtonColor: '#15803d', // verde-700
             cancelButtonColor: '#d33',
             confirmButtonText: '<i class="fas fa-trash-alt mr-1"></i> Sí, eliminar',
             cancelButtonText: '<i class="fas fa-times mr-1"></i> Cancelar',

@@ -16,9 +16,11 @@ include_once '../templates/headeradmin.php';
 include_once '../templates/navbaradmin.php';
 ?>
 
-    <div class="flex items-center justify-center min-h-screen pt-4"> <!-- Cambié pt-4 a pt-0 aquí -->
-        <div class="relative flex flex-col space-y-10 bg-white shadow-2xl rounded-2xl md:flex-row ">
-            <div class="flex flex-col justify-center p-8 md:p-14  space-y-20">
+<!-- Estructura de página modificada para que el footer quede abajo -->
+<div class="flex flex-col min-h-screen">
+    <div class="flex-grow flex items-center justify-center py-4">
+        <div class="relative flex flex-col space-y-10 bg-white shadow-2xl rounded-2xl md:flex-row">
+            <div class="flex flex-col justify-center p-8 md:p-14 space-y-20">
                 <h2 class="text-center text-2xl md:text-3xl font-bold mb-4 text-[#001A33]">Agregar Negocio</h2>
                 <form action="../../actions/store.php" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="tipo" value="negocio">
@@ -97,59 +99,62 @@ include_once '../templates/navbaradmin.php';
                     </select>
                     <!-- Input para seleccionar servicios ofrecidos -->
                     <div class="bg-white p-4 rounded-lg shadow-md mb-4">
-    <label for="servicios" class="block text-gray-700 font-bold mb-2">Servicios ofrecidos:</label>
-    <div class="space-y-2">
-        <?php if (empty($servicios)): ?>
-            <p class="text-gray-500 italic">No hay servicios disponibles en este momento.</p>
-        <?php else: ?>
-            <?php foreach ($servicios as $servicio): ?>
-                <label class="inline-flex items-center">
-                    <input type="checkbox" name="servicios[]" value="<?= $servicio['id'] ?>" class="form-checkbox h-5 w-5 text-blue-600">
-                    <span class="ml-2 text-gray-700"><?= htmlspecialchars($servicio['tipo']) ?></span>
-                </label>
-            <?php endforeach; ?>
-        <?php endif; ?>
+                    <label for="servicios" class="block text-gray-700 font-bold mb-2">Servicios ofrecidos:</label>
+                    <div class="space-y-2">
+                        <?php if (empty($servicios)): ?>
+                            <p class="text-gray-500 italic">No hay servicios disponibles en este momento.</p>
+                        <?php else: ?>
+                            <?php foreach ($servicios as $servicio): ?>
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" name="servicios[]" value="<?= $servicio['id'] ?>" class="form-checkbox h-5 w-5 text-blue-600">
+                                    <span class="ml-2 text-gray-700"><?= htmlspecialchars($servicio['tipo']) ?></span>
+                                </label>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                    </div>
                     <!-- Input para seleccionar métodos de pago -->
                     <div class="bg-white p-4 rounded-lg shadow-md mb-4">
-    <label for="metodo_de_pago_id" class="block text-gray-700 font-bold mb-2">Método de pago aceptado:</label>
-    <div class="space-y-2">
-        <?php foreach ($metodos_pago as $metodo): ?>
-            <label class="inline-flex items-center">
-                <input type="radio" name="metodo_de_pago_id" value="<?= htmlspecialchars($metodo['id']) ?>" class="form-radio h-5 w-5 text-blue-600">
-                <span class="ml-2 text-gray-700"><?= htmlspecialchars($metodo['tipo']) ?></span>
-            </label>
-        <?php endforeach; ?>
-    </div>
-</div>
+                    <label for="metodo_de_pago_id" class="block text-gray-700 font-bold mb-2">Método de pago aceptado:</label>
+                    <div class="space-y-2">
+                        <?php foreach ($metodos_pago as $metodo): ?>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="metodo_de_pago_id" value="<?= htmlspecialchars($metodo['id']) ?>" class="form-radio h-5 w-5 text-blue-600">
+                                <span class="ml-2 text-gray-700"><?= htmlspecialchars($metodo['tipo']) ?></span>
+                            </label>
+                        <?php endforeach; ?>
+                    </div>
+                    </div>
                     <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Guardar</button>
                 </form>
                 <a href="/a_1/public/admin/index.php" class="text-blue-500 mt-4 block">Volver</a>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        function previewImage(event) {
-            const file = event.target.files[0];
-            const preview = document.getElementById('preview');
-            const altText = document.getElementById('alt-text'); // Capturar el texto alternativo
+<script>
+    function previewImage(event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById('preview');
+        const altText = document.getElementById('alt-text'); // Capturar el texto alternativo
 
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    preview.src = e.target.result;
-                    preview.classList.remove('hidden'); // Mostrar imagen
-                    if (altText) altText.classList.add('hidden'); // Ocultar el texto
-                }
-                reader.readAsDataURL(file);
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.classList.remove('hidden'); // Mostrar imagen
+                if (altText) altText.classList.add('hidden'); // Ocultar el texto
             }
+            reader.readAsDataURL(file);
         }
+    }
 
-        function togglePassword(inputId) {
-            const input = document.getElementById(inputId);
-            input.type = input.type === 'password' ? 'text' : 'password';
-        }
-    </script>
+    function togglePassword(inputId) {
+        const input = document.getElementById(inputId);
+        input.type = input.type === 'password' ? 'text' : 'password';
+    }
+</script>
 
 <?php
 include_once '../templates/footeradmin.php';

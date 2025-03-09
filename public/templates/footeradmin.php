@@ -1,7 +1,7 @@
 <?php
 // templates/footeradmin.php
 ?>
-<footer class="bg-[#001a33] text-white p-4 text-center mt-auto shadow-lg">
+<footer class="bg-green-100/90 text-green-700 p-4 text-center mt-auto shadow-lg border-t border-green-200">
     <p>
         <i class="fas fa-copyright mr-1"></i> 2025 Bella Hair. Todos los derechos reservados.
     </p>
@@ -29,7 +29,7 @@
                 html: `¿Estás seguro que deseas eliminar a <strong>${nombre}</strong>?<br>Esta acción no se puede deshacer.`,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#001A33',
+                confirmButtonColor: '#047857', // Verde más oscuro para botón
                 cancelButtonColor: '#d33',
                 confirmButtonText: '<i class="fas fa-trash-alt mr-1"></i> Sí, eliminar',
                 cancelButtonText: '<i class="fas fa-times mr-1"></i> Cancelar',
@@ -64,5 +64,3 @@
         });
     });
 </script>
-</body>
-</html>

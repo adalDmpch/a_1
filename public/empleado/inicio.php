@@ -30,7 +30,7 @@ include_once '../templates/navbarempleado.php';
                 </div>
 
                 <div class="flex items-center space-x-4 flex-shrink-0">
-                    <a class="font-medium text-emerald-600 border-b-2 border-emerald-600 pb-1" href="/templates/empleado/inicio.html">Ver
+                    <a class="font-medium text-emerald-600 border-b-2 border-emerald-600 pb-1" href="/a_1/public/empleado/inicio.php">Ver
                         citas</a>
                     <a href="/a_1/public/empleado/agenda.php"
                         class="font-medium text-gray-500 hover:text-emerald-600 pb-1">Historial</a>

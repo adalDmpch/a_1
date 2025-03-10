@@ -27,8 +27,10 @@ include_once '../templates/navbarempleado.php';
         <div class="bg-white rounded-2xl shadow-sm p-6 mb-8">
             <div class="flex flex-col md:flex-row justify-between gap-4 mb-6">
                 <div class="flex items-center space-x-4">
-                    <button class="font-medium text-gray-500 hover:text-emerald-600 pb-1">Ver agenda</button>
-                    <button class="font-medium text-emerald-600 border-b-2 border-emerald-600 pb-1">Historial</button>
+                <a href="/a_1/public/empleado/inicio.php"
+                        class="font-medium text-gray-500 hover:text-emerald-600 pb-1">Ver citas</a>
+                    <a class="font-medium text-emerald-600 border-b-2 border-emerald-600 pb-1" href="/a_1/public/empleado/agenda.php">
+                         Historial</a>
                 </div>
                 
                 <div class="flex space-x-3">

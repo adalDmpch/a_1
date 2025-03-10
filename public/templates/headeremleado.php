@@ -12,6 +12,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <title><?= $pageTitle ?></title>
     <style>
+
+
+
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Inter:wght@300;400;600&display=swap');
 
         .font-heading {
@@ -20,6 +23,9 @@
 
         .font-body {
             font-family: 'Inter', sans-serif;
+        }
+        .transition-custom {
+            transition: all 0.3s ease;
         }
 
         .hover-zoom {

@@ -5,4 +5,5 @@ Este proyecto ya ha sido definido, por lo tanto, cualquier cambio o solucion que
 
 Cualquier persona, debera crear su rama y trabajar desde ella.
 
-Esto es una prueba mia
+¡¡¡¡¡¡¡¡¡A T E N C I O N !!!!!!!!!!!!
+      Se debe crear la carpeta config en la raiz, despues dentro de ella, crear el archivo confg.php, este servira para la configuracion de la base de datos.

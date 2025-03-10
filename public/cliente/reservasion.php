@@ -29,40 +29,66 @@ $negocios = $pdo->query($sqlNegocios)->fetchAll(PDO::FETCH_ASSOC);
 $sqlMetodosPago = "SELECT * FROM metodo_de_pago";
 $metodosPago = $pdo->query($sqlMetodosPago)->fetchAll(PDO::FETCH_ASSOC);
 
+// Obtener tipos de cortes
+$sqlCortes = "SELECT * FROM cortes";
+$cortes = $pdo->query($sqlCortes)->fetchAll(PDO::FETCH_ASSOC);
+
 // Procesar formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $negocio_id = $_POST['negocio_id'];
     $servicio_id = $_POST['servicio_id'];
     $empleado_id = $_POST['empleado_id'];
+    $corte_id = $_POST['corte_id'];
     $fecha = $_POST['fecha'];
     $hora = $_POST['hora'];
     $forma_de_pago_id = $_POST['payment'];
     $notas = $_POST['notas'];
 
     try {
+        // Iniciar transacción
+        $pdo->beginTransaction();
+        
         $sqlInsert = "INSERT INTO citas (
-            cliente_id, empleado_id, servicio_id, 
+            cliente_id, empleado_id, servicio_id, corte_id, 
             forma_de_pago_id, negocio_id, fecha, hora, 
             notas, estado, nombre_cliente
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pendiente', ?)";
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pendiente', ?)";
         
         $stmtInsert = $pdo->prepare($sqlInsert);
         $stmtInsert->execute([
             $cliente['id'],
             $empleado_id,
             $servicio_id,
-            $forma_de_pago_id,
-            $negocio_id,
-            $fecha,
-            $hora,
-            $notas,
-            $cliente['nombre']
+            $corte_id,               // Correcto - corte_id
+            $forma_de_pago_id,       // Correcto - forma_de_pago_id
+            $negocio_id,            // Correcto - negocio_id
+            $fecha,                 // Correcto - fecha
+            $hora,                  // Correcto - hora
+            $notas,                 // Correcto - notas
+            $cliente['nombre']      // Correcto - nombre_cliente
         ]);
+        
+        // 2. Insertar en historial_cortes
+        $sqlHistorial = "INSERT INTO historial_cortes (
+            cliente_id, corte_id, fecha
+        ) VALUES (?, ?, ?)";
+        
+        $stmtHistorial = $pdo->prepare($sqlHistorial);
+        $stmtHistorial->execute([
+            $cliente['id'],
+            $corte_id,
+            $fecha
+        ]);
+        
+        // Confirmar transacción
+        $pdo->commit();
         
         $_SESSION['success'] = "Cita reservada exitosamente!";
         header("Location: reservacion.php");
         exit();
     } catch (PDOException $e) {
+        // Revertir transacción en caso de error
+        $pdo->rollBack();
         $error = "Error al reservar la cita: " . $e->getMessage();
     }
 }
@@ -139,7 +165,21 @@ include_once '../templates/navbarclient.php';
                                     </select>
                                 </div>
                             </div>
-
+                            <!-- Selección de Corte -->
+                            <div class="space-y-2">
+                                <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
+                                    <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z"/>
+                                    </svg>
+                                    <span>Tipo de Corte</span>
+                                </label>
+                                <select id="corte_id" name="corte_id" class="w-full p-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all" required>
+                                    <option value="">Selecciona un tipo de corte</option>
+                                    <?php foreach ($cortes as $corte): ?>
+                                        <option value="<?= $corte['id'] ?>"><?= $corte['tipo'] ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
                             <!-- Empleados (se actualiza con AJAX) -->
                             <div class="space-y-2">
                                 <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
@@ -230,8 +270,7 @@ include_once '../templates/navbarclient.php';
                 </form>
             </div>
         </div>
-    </div>
-</div>
+
 
 <script>
 document.getElementById('negocio_id').addEventListener('change', function() {

@@ -1,6 +1,4 @@
 <!-- Dark Mode Implementation for Bella Hair -->
-<div id="dark-mode-animation" class="fixed inset-0 bg-black z-[100] pointer-events-none opacity-0"></div>
-
 <div id="theme-toggle-container" class="fixed bottom-6 right-6 z-50">
   <button id="theme-toggle" class="bg-gradient-to-r from-green-600 to-green-800 hover:from-green-700 hover:to-green-900 text-white rounded-full p-3 shadow-lg transition-all duration-300 transform hover:scale-110 focus:outline-none">
     <svg id="sun-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -12,9 +10,20 @@
   </button>
 </div>
 
+<!-- Contenedor para el efecto de transición -->
+<div id="theme-transition-overlay" class="fixed inset-0 z-[100] pointer-events-none opacity-0"></div>
+
 <!-- Estilos para el modo oscuro refinados para Bella Hair -->
 <style id="dark-mode-styles">
   /* Variables para tema oscuro */
+  :root {
+    --light-main-bg: #ffffff;
+    --light-card-bg: #ffffff;
+    --light-text-primary: #000000;
+    --light-text-secondary: #4b5563;
+    --light-border-color: #e5e7eb;
+  }
+  
   .dark-mode {
     --main-bg: #0f172a;
     --card-bg: #1e293b;
@@ -27,8 +36,22 @@
     --accent-light: rgba(16, 185, 129, 0.15);
   }
   
+  /* Establecer variables CSS para modo claro por defecto */
+  :root:not(.dark-mode) {
+    --main-bg: var(--light-main-bg);
+    --card-bg: var(--light-card-bg);
+    --text-primary: var(--light-text-primary);
+    --text-secondary: var(--light-text-secondary);
+    --border-color: var(--light-border-color);
+  }
+  
+  /* Prevenir el parpadeo */
+  html.transitioning * {
+    transition: background-color 1.2s ease, color 1.2s ease, border-color 1.2s ease !important;
+  }
+  
   /* Estilos generales */
-  .dark-mode body {
+  body {
     background-color: var(--main-bg);
     color: var(--text-primary);
   }
@@ -135,36 +158,100 @@
   .dark-mode .swal2-content {
     color: var(--text-primary);
   }
+  
+  /* Estilos para la transición elegante */
+  #theme-transition-overlay {
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: opacity;
+    backdrop-filter: blur(0px);
+  }
+  
+  #theme-transition-overlay.active {
+    opacity: 0.8;
+    backdrop-filter: blur(4px);
+  }
+  
+  #theme-transition-overlay.to-dark {
+    background: radial-gradient(circle at var(--x) var(--y), rgba(16, 185, 129, 0.5), rgba(15, 23, 42, 0.95));
+  }
+  
+  #theme-transition-overlay.to-light {
+    background: radial-gradient(circle at var(--x) var(--y), rgba(16, 185, 129, 0.5), rgba(248, 250, 252, 0.95));
+  }
+
+  /* Animación del botón */
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.8);
+      transform: scale(1);
+    }
+    50% {
+      box-shadow: 0 0 0 12px rgba(16, 185, 129, 0);
+      transform: scale(1.05);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+      transform: scale(1);
+    }
+  }
+  
+  .button-pulse {
+    animation: pulse 1s cubic-bezier(0.4, 0, 0.6, 1);
+  }
 </style>
 
-<!-- Script para el modo oscuro con animación suave -->
+<!-- Script en el encabezado para prevenir el parpadeo -->
+<script>
+  // Verificar y aplicar el modo oscuro antes de que se cargue la página
+  (function() {
+    // Obtener preferencia guardada (por defecto oscuro si no hay preferencia)
+    const darkModePreference = localStorage.getItem('darkMode') !== 'false';
+    
+    // Aplicar clase de inmediato
+    if (darkModePreference) {
+      document.documentElement.classList.add('dark-mode');
+    }
+  })();
+</script>
+
+<!-- Script para el modo oscuro con transición de desvanecimiento elegante -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const html = document.documentElement;
   const themeToggle = document.getElementById('theme-toggle');
   const sunIcon = document.getElementById('sun-icon');
   const moonIcon = document.getElementById('moon-icon');
-  const darkModeAnimation = document.getElementById('dark-mode-animation');
+  const transitionOverlay = document.getElementById('theme-transition-overlay');
   
   // Verificar preferencia guardada y activar modo oscuro por defecto
   const darkModePreference = localStorage.getItem('darkMode') !== 'false'; // Por defecto oscuro
   
-  // Aplicar modo oscuro por defecto o según preferencia
+  // Actualizar la interfaz según el estado actual (los estilos ya se aplicaron en el script inicial)
   if (darkModePreference) {
-    enableDarkMode(false);
+    moonIcon.classList.add('hidden');
+    sunIcon.classList.remove('hidden');
   } else {
-    disableDarkMode(false);
+    sunIcon.classList.add('hidden');
+    moonIcon.classList.remove('hidden');
   }
   
   // Alternar modo oscuro al hacer clic en el botón
   themeToggle.addEventListener('click', function() {
     const isDarkMode = html.classList.contains('dark-mode');
     
+    // Animación de pulso en el botón
+    themeToggle.classList.add('button-pulse');
+    
     if (isDarkMode) {
       disableDarkMode(true);
     } else {
       enableDarkMode(true);
     }
+    
+    // Quitar clase de animación después de que termine
+    setTimeout(() => {
+      themeToggle.classList.remove('button-pulse');
+    }, 1000);
   });
   
   // Función para habilitar el modo oscuro
@@ -174,8 +261,8 @@ document.addEventListener('DOMContentLoaded', function() {
     sunIcon.classList.remove('hidden');
     
     if (animate) {
-      // Ejecutar animación
-      playToggleAnimation(true);
+      // Ejecutar transición de desvanecimiento
+      playFadeTransition(true);
     } else {
       // Aplicar directamente sin animación
       html.classList.add('dark-mode');
@@ -192,8 +279,8 @@ document.addEventListener('DOMContentLoaded', function() {
     moonIcon.classList.remove('hidden');
     
     if (animate) {
-      // Ejecutar animación
-      playToggleAnimation(false);
+      // Ejecutar transición de desvanecimiento
+      playFadeTransition(false);
     } else {
       // Aplicar directamente sin animación
       html.classList.remove('dark-mode');
@@ -203,53 +290,48 @@ document.addEventListener('DOMContentLoaded', function() {
     localStorage.setItem('darkMode', 'false');
   }
   
-  // Animación para el cambio de modo
-  function playToggleAnimation(toDark) {
-    // Reset de la animación
-    darkModeAnimation.style.animation = 'none';
-    darkModeAnimation.offsetHeight; // Trigger reflow
+  // Transición elegante de desvanecimiento para el cambio de modo
+  function playFadeTransition(toDark) {
+    // Agregar clase transitioning para prevenir parpadeos
+    html.classList.add('transitioning');
     
-    if (toDark) {
-      // Animación a modo oscuro
-      darkModeAnimation.style.background = 'radial-gradient(circle at var(--x) var(--y), rgba(16, 185, 129, 0.9) 0%, rgba(15, 23, 42, 0.95) 50%)';
+    // Posición del botón para el gradiente radial
+    const rect = themeToggle.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+    
+    // Establecer posición del origen del gradiente
+    transitionOverlay.style.setProperty('--x', x + 'px');
+    transitionOverlay.style.setProperty('--y', y + 'px');
+    
+    // Establecer la clase de dirección correcta
+    transitionOverlay.className = 'fixed inset-0 z-[100] pointer-events-none opacity-0';
+    transitionOverlay.classList.add(toDark ? 'to-dark' : 'to-light');
+    
+    // Iniciar desvanecimiento
+    setTimeout(() => {
+      transitionOverlay.classList.add('active');
       
-      // Posición del origen de la animación
-      const rect = themeToggle.getBoundingClientRect();
-      const x = rect.left + rect.width / 2;
-      const y = rect.top + rect.height / 2;
-      darkModeAnimation.style.setProperty('--x', x + 'px');
-      darkModeAnimation.style.setProperty('--y', y + 'px');
-      
-      // Animar
-      darkModeAnimation.style.transition = 'opacity 0s';
-      darkModeAnimation.style.opacity = '1';
-      
+      // Cambiar el tema después de un breve retraso
       setTimeout(() => {
-        darkModeAnimation.style.transition = 'all 0.8s cubic-bezier(0.19, 1, 0.22, 1)';
-        darkModeAnimation.style.transform = 'scale(5)';
-        
-        setTimeout(() => {
+        if (toDark) {
           html.classList.add('dark-mode');
+        } else {
+          html.classList.remove('dark-mode');
+        }
+        
+        // Desaparecer el overlay gradualmente
+        setTimeout(() => {
+          transitionOverlay.classList.remove('active');
           
+          // Remover clases después de completar
           setTimeout(() => {
-            darkModeAnimation.style.opacity = '0';
-            darkModeAnimation.style.transform = 'scale(1)';
-          }, 400);
-        }, 200);
-      }, 50);
-    } else {
-      // Animación a modo claro
-      html.classList.remove('dark-mode');
-      
-      // Simple fadeout para modo claro
-      darkModeAnimation.style.background = '#f8fafc';
-      darkModeAnimation.style.opacity = '0.5';
-      
-      setTimeout(() => {
-        darkModeAnimation.style.transition = 'opacity 0.8s ease';
-        darkModeAnimation.style.opacity = '0';
-      }, 50);
-    }
+            transitionOverlay.classList.remove(toDark ? 'to-dark' : 'to-light');
+            html.classList.remove('transitioning');
+          }, 800);
+        }, 400);
+      }, 400);
+    }, 50);
   }
 });
 </script>

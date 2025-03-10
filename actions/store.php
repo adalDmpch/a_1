@@ -11,36 +11,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ubicaciondelnegocio = isset($_POST['ubicaciondelnegocio']) ? trim($_POST['ubicaciondelnegocio']) : null;
             $phonenegocio = isset($_POST['phonenegocio']) ? trim($_POST['phonenegocio']) : null;
             $emailnegocio = isset($_POST['emailnegocio']) ? trim($_POST['emailnegocio']) : null;
-            
-            
             $dias_operacion = isset($_POST['dias_operacion']) ? implode(', ', $_POST['dias_operacion']) : null;
             $horas_operacion = isset($_POST['horas_operacion']) ? trim($_POST['horas_operacion']) : null;
             $horas_fin = isset($_POST['horas_fin']) ? trim($_POST['horas_fin']) : null;
             $metodo_de_pago_id = isset($_POST['metodo_de_pago_id']) ? intval($_POST['metodo_de_pago_id']) : null;
+            $servicios = $_POST['servicios'] ?? []; // Array con los IDs de los servicios seleccionados
 
-            if (!$nombrenegocio || !$tipodenegocio || !$ubicaciondelnegocio || !$phonenegocio || !$emailnegocio || !$servicios || !$dias_operacion || !$horas_operacion || !$horas_fin || !$metodo_de_pago_id ) {
+            
+
+            if (!$nombrenegocio || !$tipodenegocio || !$ubicaciondelnegocio || !$phonenegocio || !$emailnegocio || !$dias_operacion || !$horas_operacion || !$horas_fin || !$metodo_de_pago_id ) {
                 die("Error: Todos los campos son obligatorios.");
             }
 
-            if (!isset($_FILES['logo']) || $_FILES['logo']['error'] !== UPLOAD_ERR_OK) {
+            if (!isset($_FILES['foto_de_perfil']) || $_FILES['foto_de_perfil']['error'] !== UPLOAD_ERR_OK) {
                 die("Error: La imagen de perfil es obligatoria.");
             }
 
-            // Guardar la imagen en la carpeta uploads/
-            $uploads_dir = '../public/uploads/';
-            if (!is_dir($uploads_dir)) {
-                mkdir($uploads_dir, 0777, true); // Crea la carpeta si no existe
-            }
-            $foto_nombree = basename($_FILES['logo']['name']);
-            $foto_destinoo = $uploads_dir . $foto_nombree;
+            // Manejo de imagen de perfil
+            if (isset($_FILES['foto_de_perfil']) && $_FILES['foto_de_perfil']['error'] === UPLOAD_ERR_OK) {
+                // Aquí verificamos que el archivo fue cargado correctamente
+                $foto_nombre = basename($_FILES['foto_de_perfil']['name']);
+                $uploads_dir = '../public/uploads/';
 
-            if (!move_uploaded_file($_FILES['logo']['tmp_name'], $foto_destinoo)) {
-                die("Error: No se pudo guardar la imagen.");
+                // Creamos el directorio de uploads si no existe
+                if (!is_dir($uploads_dir)) {
+                    mkdir($uploads_dir, 0777, true);
+                }
+
+                $foto_destino = $uploads_dir . $foto_nombre;
+
+                // Movemos el archivo al destino
+                if (!move_uploaded_file($_FILES['foto_de_perfil']['tmp_name'], $foto_destino)) {
+                    throw new Exception("Error al guardar la imagen.");
+                }
+
+                $foto_perfil = $foto_destino; // Guardar la ruta de la imagen
+            } else {
+                throw new Exception("Error al guardar la imagen");
             }
 
             try {
-                $stmt = $pdo->prepare("INSERT INTO negocio (nombrenegocio, tipodenegocio, ubicaciondelnegocio, phonenegocio, emailnegocio, logo, dias_operacion, horas_operacion, horas_fin, metodo_de_pago_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$nombrenegocio, $tipodenegocio, $ubicaciondelnegocio, $phonenegocio, $emailnegocio, $foto_destinoo, $dias_operacion, $horas_operacion, $horas_fin, $metodo_de_pago_id]);
+                // Insertar en la tabla negocio
+                $stmt = $pdo->prepare("INSERT INTO negocio (nombrenegocio, tipodenegocio, ubicaciondelnegocio, phonenegocio, emailnegocio, dias_operacion, horas_operacion, horas_fin, metodo_de_pago_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$nombrenegocio, $tipodenegocio, $ubicaciondelnegocio, $phonenegocio, $emailnegocio, $dias_operacion, $horas_operacion, $horas_fin, $metodo_de_pago_id]);
+    
+                $negocio_id = $pdo->lastInsertId(); // Obtener el ID del negocio recién insertado
+    
+                // Insertar los servicios seleccionados en la tabla intermedia
+                if (!empty($servicios)) {
+                    $stmtServicio = $pdo->prepare("INSERT INTO negocio_servicios (negocio_id, servicio_id) VALUES (?, ?)");
+                    foreach ($servicios as $servicio_id) {
+                        $stmtServicio->execute([$negocio_id, $servicio_id]);
+                    }
+                }
+    
+                echo "Negocio registrado con éxito.";
             } catch (PDOException $e) {
                 die("Error en la base de datos: " . $e->getMessage());
             }

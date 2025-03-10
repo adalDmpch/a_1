@@ -444,43 +444,75 @@ document.addEventListener('DOMContentLoaded', function() {
     const nextStep2 = document.getElementById('next-step-2');
     const prevStep3 = document.getElementById('prev-step-3');
     
-    // Evento para el negocio (carga servicios y empleados)
-    document.getElementById('negocio_id').addEventListener('change', function() {
-        const negocioId = this.value;
-        
-        // Cargar servicios
-        fetch(`get_servicios.php?negocio_id=${negocioId}`)
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('servicios-container').innerHTML = data;
-            });
+// Corrige la cadena de promesas en el evento change del negocio_id
+document.getElementById('negocio_id').addEventListener('change', function() {
+    const negocioId = this.value;
+    const serviciosContainer = document.getElementById('servicios-container');
+    const empleadosGrid = document.getElementById('empleados-grid');
+    
+    if (!negocioId) {
+        serviciosContainer.innerHTML = `
+            <select id="servicio_id" name="servicio_id" 
+                class="w-full p-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all" 
+                required disabled>
+                <option value="">Primero selecciona un negocio</option>
+            </select>`;
+            
+        empleadosGrid.innerHTML = `
+            <div class="text-center text-gray-500 py-8 col-span-full">
+                <svg class="w-12 h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                </svg>
+                <p class="mt-4 text-gray-600 font-medium">Selecciona un negocio para ver los especialistas disponibles</p>
+            </div>`;
+        return;
+    }
+    
+    // Cargar servicios
+    fetch(`get_servicios.php?negocio_id=${negocioId}`)
+        .then(response => {
+            if (!response.ok) throw new Error('Error de red');
+            return response.text();
+        })
+        .then(data => serviciosContainer.innerHTML = data)
+        .catch(error => {
+            serviciosContainer.innerHTML = `
+                <select class="w-full p-3 border border-red-300 bg-red-50 rounded-lg" disabled>
+                    <option>Error al cargar servicios</option>
+                </select>`;
+        });
 
-        // Cargar empleados
-        fetch(`get_empleados_cards.php?negocio_id=${negocioId}`)
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('empleados-grid').innerHTML = data;
-                
-                // Añadir evento de selección a las tarjetas de empleados
-                const employeeCards = document.querySelectorAll('.employee-card');
-                employeeCards.forEach(card => {
-                    card.addEventListener('click', function() {
-                        // Quitar selección anterior
-                        document.querySelectorAll('.employee-card').forEach(c => {
-                            c.classList.remove('selected');
-                        });
-                        
-                        // Añadir selección al actual
-                        this.classList.add('selected');
-                        
-                        // Guardar ID del empleado en el campo oculto
-                        const employeeId = this.getAttribute('data-employee-id');
-                        document.getElementById('empleado_id').value = employeeId;
+    // Cargar empleados
+    fetch(`get_empleados_cards.php?negocio_id=${negocioId}`)
+        .then(response => {
+            if (!response.ok) throw new Error('Error de red');
+            return response.text();
+        })
+        .then(data => {
+            empleadosGrid.innerHTML = data;
+            
+            // Vincular eventos de selección
+            const employeeCards = document.querySelectorAll('.employee-card');
+            employeeCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    document.querySelectorAll('.employee-card').forEach(c => {
+                        c.classList.remove('selected');
                     });
+                    this.classList.add('selected');
+                    document.getElementById('empleado_id').value = this.dataset.employeeId;
                 });
             });
-    });
-    
+        })
+        .catch(error => {
+            empleadosGrid.innerHTML = `
+                <div class="text-center text-red-500 py-8 col-span-full">
+                    <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    <p class="mt-2">Error al cargar especialistas</p>
+                </div>`;
+        });
+});
     // Función para mostrar el modal con un mensaje personalizado
 function showModal(message) {
     // Si el modal ya existe, solo actualiza el mensaje y lo muestra

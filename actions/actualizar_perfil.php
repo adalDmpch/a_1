@@ -33,7 +33,7 @@ try {
         throw new Exception("Formato de email inválido");
     }
 
-    // Verificar si el nuevo email ya existe en usuarios
+    // Verificar si el nuevo email ya existe en otros usuarios
     $stmt = $pdo->prepare("SELECT id FROM usuarios WHERE email_usuario = ? AND id != ?");
     $stmt->execute([$nuevo_email, $user_id]);
     if ($stmt->fetch()) {
@@ -52,31 +52,33 @@ try {
         $nombre_imagen = $archivo['nombre'];
     }
 
-    // Actualizar tabla CLIENTE
-    $sqlCliente = "UPDATE cliente SET 
-                  nombre = ?, 
-                  email_cliente = ?, 
-                  phone = ?, 
-                  fecha = ?" 
-                  . ($nombre_imagen ? ", foto_de_perfil = ?" : "") 
-                  . " WHERE id = ?";
-    
-    $paramsCliente = [$nombre, $nuevo_email, $telefono, $fecha_nacimiento];
-    if ($nombre_imagen) {
-        $paramsCliente[] = $nombre_imagen;
-    }
-    $paramsCliente[] = $cliente_id;
-    
-    $stmtCliente = $pdo->prepare($sqlCliente);
-    $stmtCliente->execute($paramsCliente);
+    // Paso 1: Establecer el email_cliente a NULL para evitar el conflicto
+    $sqlCliente1 = "UPDATE cliente SET email_cliente = NULL WHERE id = ?";
+    $stmtCliente1 = $pdo->prepare($sqlCliente1);
+    $stmtCliente1->execute([$cliente_id]);
 
-    // Actualizar tabla USUARIOS
-    $sqlUsuario = "UPDATE usuarios SET 
-                  email_usuario = ? 
-                  WHERE cliente_id = ?";
-    
+    // Paso 2: Actualizar el email en usuarios
+    $sqlUsuario = "UPDATE usuarios SET email_usuario = ? WHERE id = ?";
     $stmtUsuario = $pdo->prepare($sqlUsuario);
-    $stmtUsuario->execute([$nuevo_email, $cliente_id]);
+    $stmtUsuario->execute([$nuevo_email, $user_id]);
+
+    // Paso 3: Actualizar el resto de la información del cliente, incluyendo el nuevo email
+    $sqlCliente2 = "UPDATE cliente SET 
+    nombre = ?, 
+    email_cliente = ?, 
+    phone = ?, 
+    fecha = ?" 
+    . ($nombre_imagen ? ", foto_de_perfil = ?" : "") 
+    . " WHERE id = ?";
+
+    $paramsCliente2 = [$nombre, $nuevo_email, $telefono, $fecha_nacimiento];
+    if ($nombre_imagen) {
+        $paramsCliente2[] = $nombre_imagen;
+    }
+    $paramsCliente2[] = $cliente_id;
+
+    $stmtCliente2 = $pdo->prepare($sqlCliente2);
+    $stmtCliente2->execute($paramsCliente2);
 
     $pdo->commit(); // Confirmar cambios
 

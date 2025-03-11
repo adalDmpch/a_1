@@ -1,18 +1,71 @@
 <?php
 require '../../config/confg.php';
 
-
 session_start();
 if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "empleado") {
     header("Location: ../login.php");
     exit();
 }
 
+// Verifica que $_SESSION["user_id"] esté configurada correctamente
+// var_dump($_SESSION["user_id"]); // Esto debería mostrar el valor de user_id
+
 $pageTitle = 'Noir Elite - Agenda de Citas';
 include_once '../templates/headeremleado.php';
 include_once '../templates/navbarempleado.php';
-?>
 
+// Obtener el correo del usuario autenticado
+$sqlCorreo = "SELECT email_usuario FROM usuarios WHERE id = ?";
+$stmtCorreo = $pdo->prepare($sqlCorreo);
+$stmtCorreo->execute([$_SESSION["user_id"]]);
+$usuario = $stmtCorreo->fetch(PDO::FETCH_ASSOC);
+
+// Verifica que la consulta fue exitosa
+if (!$usuario) {
+    $_SESSION['error'] = "No se encontró el usuario.";
+    header("Location: ../login.php");
+    exit();
+}
+
+$correo = $usuario['email_usuario']; // Correo del usuario autenticado
+
+// Verifica el valor del correo
+// var_dump($correo); // Ahora esto debe mostrar el valor de $correo
+
+// Obtener el ID del empleado usando su correo
+$sqlEmpleado = "SELECT id FROM empleados WHERE email_empleado = ?";
+$stmtEmpleado = $pdo->prepare($sqlEmpleado);
+$stmtEmpleado->execute([$correo]);
+$empleado = $stmtEmpleado->fetch(PDO::FETCH_ASSOC);
+
+if (!$empleado) {
+    $_SESSION['error'] = "No se encontró el empleado asociado a este usuario.";
+    header("Location: ../login.php");
+    exit();
+}
+
+$empleado_id = $empleado['id']; // ID real del empleado
+
+// Mostrar mensajes de error o éxito
+if (isset($_SESSION['error'])) {
+    echo '<div class="max-w-7xl mx-auto mt-24 mb-4">
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg" role="alert">
+                <p>' . htmlspecialchars($_SESSION['error']) . '</p>
+            </div>
+          </div>';
+    unset($_SESSION['error']);
+}
+
+if (isset($_SESSION['exito'])) {
+    echo '<div class="max-w-7xl mx-auto mt-24 mb-4">
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg" role="alert">
+                <p>' . htmlspecialchars($_SESSION['exito']) . '</p>
+            </div>
+          </div>';
+    unset($_SESSION['exito']);
+}
+
+?>
 
 <!-- Contenido principal -->
 <main class="pt-24 pb-16 px-4">
@@ -25,8 +78,7 @@ include_once '../templates/navbarempleado.php';
                     <h2 class="font-heading text-4xl text-center md:text-left font-bold text-gray-900 mb-3">Agenda
                         de Citas Pendientes</h2>
                     <p class="text-gray-600 max-w-2xl md:mx-0 mx-auto">Gestiona tus citas, consulta tu agenda y
-                        organiza tu
-                        tiempo de manera eficiente.</p>
+                        organiza tu tiempo de manera eficiente.</p>
                 </div>
 
                 <div class="flex items-center space-x-4 flex-shrink-0">
@@ -37,124 +89,103 @@ include_once '../templates/navbarempleado.php';
                 </div>
             </div>
         </div>
-        <!-- Citas del día seleccionado -->
-        <div class="bg-white rounded-2xl shadow-sm p-6">
-            <h3 class="font-heading text-2xl font-bold mb-6">Citas para hoy: 26 de Febrero, 2025</h3>
+        
+        <!-- Citas pendientes -->
+        <div class="bg-white rounded-2xl shadow-sm p-6 mb-8">
+            <h3 class="font-heading text-2xl font-bold mb-6">Mis citas pendientes</h3>
 
             <div class="space-y-4">
-                <!-- Cita 1 -->
-                <div
-                    class="border border-gray-200 rounded-xl p-4 hover:border-emerald-300 hover:shadow-md transition-all hover-zoom">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h4 class="font-medium text-lg">Ana Suárez</h4>
-                            <p class="text-gray-600">Corte de cabello y peinado</p>
-                            <div class="flex items-center mt-3 text-gray-500">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                <span>9:30 - 10:30 AM</span>
+                <?php
+                // Consultar todas las citas pendientes del empleado actual
+                $sql = "SELECT c.*, s.tipo AS tipo, cl.nombre AS cliente_nombre, c.estado 
+                        FROM citas c 
+                        JOIN servicios s ON c.servicio_id = s.id 
+                        JOIN cliente cl ON c.cliente_id = cl.id 
+                        WHERE c.empleado_id = ? AND c.estado = 'pendiente' 
+                        ORDER BY c.hora ASC";
+
+                try {
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->execute([$empleado_id]); // Usar el ID del empleado
+                    $citas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                    if (count($citas) > 0) {
+                        foreach ($citas as $cita) {
+                            $hora = date("H:i", strtotime($cita['hora']));
+                            $estado_clase = 'bg-yellow-100 text-yellow-800';
+                            ?>
+                            <div class="border border-gray-200 rounded-xl p-4 hover:border-emerald-300 hover:shadow-md transition-all">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h2 class="font-medium font-heading text-2xl font-bold mb-2"><?php echo htmlspecialchars($cita['cliente_nombre']); ?></h2>
+                                        <p class="text-gray-600"><?php echo htmlspecialchars($cita['tipo']); ?></p>
+                                        <div class="flex items-center mt-3 text-gray-500">
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            <span><?php echo $hora; ?></span>
+                                        </div>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <?php if ($cita['estado'] == 'pendiente'): ?>
+                                            <!-- Botón para aceptar cita -->
+                                            <form method="post" action="../../actions/procesar_cita.php" style="display: inline;">
+                                                <input type="hidden" name="id_cita" value="<?php echo $cita['id']; ?>">
+                                                <input type="hidden" name="accion" value="aceptar">
+                                                <button type="submit" class="text-emerald-600 hover:bg-emerald-50 p-2 rounded-full" title="Aceptar cita">
+                                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                            
+                                            <!-- Botón para rechazar cita -->
+                                            <form method="post" action="../../actions/procesar_cita.php" style="display: inline;">
+                                                <input type="hidden" name="id_cita" value="<?php echo $cita['id']; ?>">
+                                                <input type="hidden" name="accion" value="rechazar">
+                                                <button type="submit" class="text-red-600 hover:bg-red-50 p-2 rounded-full" title="Rechazar cita">
+                                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                        <?php endif; ?>
+                                    </div>
+
+                                </div>
+                                <div class="mt-3 border-t border-gray-100 pt-3 flex justify-between">
+                                    <span class="<?php echo $estado_clase; ?> text-xs px-3 py-1 rounded-full">
+                                        Pendiente
+                                    </span>
+                                </div>
                             </div>
+                            <?php
+                        }
+                    } else {
+                        ?>
+                        <div class="text-center py-12 animate__animated animate__fadeIn">
+                            <svg class="w-32 h-32 mx-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <h3 class="mt-6 text-2xl font-medium text-gray-900">No tienes citas pendientes</h3>
+                            <p class="mt-2 text-gray-600 max-w-md mx-auto">Tu agenda está libre. Aprovecha para organizar otras tareas o revisar el historial de citas anteriores.</p>
                         </div>
-                        <div class="flex space-x-2">
-                            <button class="text-emerald-600 hover:bg-emerald-50 p-2 rounded-full">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
-                                    </path>
-                                </svg>
-                            </button>
-                            <button class="text-red-600 hover:bg-red-50 p-2 rounded-full">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                                    </path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="mt-3 border-t border-gray-100 pt-3 flex justify-between">
-                        <div class="text-sm">
-                            <span class="text-gray-500">Teléfono:</span> +54 11 6543-2109
-                        </div>
-                        <div>
-                            <span
-                                class="bg-emerald-100 text-emerald-800 text-xs px-3 py-1 rounded-full">Confirmada</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Cita 2 -->
-                <div
-                    class="border border-gray-200 rounded-xl p-4 hover:border-emerald-300 hover:shadow-md transition-all hover-zoom">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h4 class="font-medium text-lg">Pedro Martínez</h4>
-                            <p class="text-gray-600">Afeitado y corte de barba</p>
-                            <div class="flex items-center mt-3 text-gray-500">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                <span>14:00 - 15:00 PM</span>
-                            </div>
-                        </div>
-                        <div class="flex space-x-2">
-                            <button class="text-emerald-600 hover:bg-emerald-50 p-2 rounded-full">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
-                                    </path>
-                                </svg>
-                            </button>
-                            <button class="text-red-600 hover:bg-red-50 p-2 rounded-full">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                                    </path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="mt-3 border-t border-gray-100 pt-3 flex justify-between">
-                        <div class="text-sm">
-                            <span class="text-gray-500">Teléfono:</span> +54 11 7890-1234
-                        </div>
-                        <div>
-                            <span
-                                class="bg-yellow-100 text-yellow-800 text-xs px-3 py-1 rounded-full">Pendiente</span>
-                        </div>
-                    </div>
-                </div>
-
-
+                        <?php
+                    }
+                } catch (PDOException $e) {
+                    echo '<div class="text-center py-8">
+                            <p class="text-red-600">Error al cargar las citas: ' . $e->getMessage() . '</p>
+                          </div>';
+                }
+                ?>
             </div>
         </div>
     </div>
 </main>
-<script>
-    // Menú móvil
-    const menuButton = document.getElementById('menuButton');
-    const mobileMenu = document.getElementById('mobileMenu');
 
-    menuButton.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
-    });
-
-    // Smooth scroll
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            document.querySelector(this.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth'
-            });
-        });
-    });
-</script>
-<?php
-include_once '../templates/footerempleado.php';
-?>
-<!-- Agregar animaciones CSS -->
+<?php include_once '../templates/footerempleado.php'; ?>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
-

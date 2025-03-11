@@ -70,7 +70,7 @@ $stmtHistorial = $pdo->prepare($sqlHistorial);
 $stmtHistorial->execute([$cliente['id']]);
 $historial = $stmtHistorial->fetchAll(PDO::FETCH_ASSOC);
 
-$pageTitle = 'Historial - Noir Elite';
+$pageTitle = 'Historial - BELLA HAIR';
 include_once '../templates/headeremleado.php';
 include_once '../templates/navbarcliente.php';
 include_once '../templates/navbarclient.php';

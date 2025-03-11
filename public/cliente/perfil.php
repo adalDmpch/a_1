@@ -25,7 +25,7 @@ if (!$cliente) {
     die("No se encontró información en la tabla cliente para este usuario.");
 }
 
-$pageTitle = 'Perfil Cliente - Noir Elite';
+$pageTitle = 'Perfil Cliente - BELLA HAIR';
 include_once '../templates/headercliente.php';
 include_once '../templates/navbarcliente.php';
 include_once '../templates/navbarclient.php';

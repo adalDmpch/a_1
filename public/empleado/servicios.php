@@ -37,7 +37,7 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "empleado") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>Servicios - Noir Elite Barbería</title>
+    <title>Servicios - BELLA HAIR Barbería</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Inter:wght@300;400;600&display=swap');
         
@@ -60,8 +60,8 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "empleado") {
                 <!-- Logo -->
                 <div class="flex items-center space-x-2 sm:space-x-3">
                     <h1 class="font-heading text-3xl font-bold text-gray-900">
-                        <span class="text-emerald-600">NOIR</span> 
-                        <span class="text-gray-800">ELITE</span>
+                        <span class="text-emerald-600">BELLA</span> 
+                        <span class="text-gray-800">HAIR</span>
                     </h1>
                 </div>
                                 

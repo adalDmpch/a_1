@@ -3,7 +3,7 @@
         <div class="max-w-6xl mx-auto px-4">
             <div class="grid md:grid-cols-4 gap-8">
                 <div class="space-y-3">
-                    <h4 class="font-heading text-xl font-bold">NOIR<span class="text-emerald-500">ELITE</span></h4>
+                    <h4 class="font-heading text-xl font-bold">BELLA<span class="text-emerald-500">HAIR</span></h4>
                     <p class="text-gray-400 text-sm">Estilo y excelencia en cada corte</p>
                 </div>
 
@@ -45,7 +45,7 @@
                             <svg class="w-4 h-4 mr-2 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                             </svg>
-                            hola@noir.com
+                            hola@bella.com
                         </li>
                         <li class="flex items-center">
                             <svg class="w-4 h-4 mr-2 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -79,7 +79,7 @@
             </div>
 
             <div class="border-t border-gray-800 mt-8 pt-6 text-center">
-                <p class="text-gray-500 text-sm">&copy; 2024 Noir Elite Barbería. Todos los derechos reservados.</p>
+                <p class="text-gray-500 text-sm">&copy; 2024 BELLA HAIR Barbería. Todos los derechos reservados.</p>
             </div>
         </div>
     </footer>

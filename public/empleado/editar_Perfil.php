@@ -85,7 +85,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update_profile"])) {
     }
 }
 
-    $pageTitle = 'Editar Perfil - Noir Elite - Barbería & Estilistas';
+    $pageTitle = 'Editar Perfil - BELLA HAIR - Barbería & Estilistas';
     include_once '../templates/headeremleado.php';
     include_once '../templates/navbarsalir.php';
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NOIR ELITE - Acceso Exclusivo</title>
+    <title>BELLA HAIR - Acceso Exclusivo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
     <style>
@@ -116,8 +116,8 @@
                 <!-- Logo -->
                 <div class="flex items-center space-x-2 sm:space-x-3">
                     <h1 class="font-heading text-3xl font-bold">
-                        <span class="text-emerald-500">NOIR</span>
-                        <span class="text-white">ELITE</span>
+                        <span class="text-emerald-500">BELLA</span>
+                        <span class="text-white">HAIR</span>
                     </h1>
                 </div>
 
@@ -204,8 +204,8 @@
                     
                     <div class="text-center mb-8">
                         <h1 class="font-heading text-3xl font-bold mb-2">
-                            <span class="text-emerald-400">NOIR</span>
-                            <span class="text-white">ELITE</span>
+                            <span class="text-emerald-400">BELLA</span>
+                            <span class="text-white">HAIR</span>
                         </h1>
                         <h2 class="text-white text-xl font-bold">Acceso Exclusivo</h2>
                         <p class="text-gray-400 text-sm mt-2">Gestiona tus reservas y preferencias de estilo</p>
@@ -215,7 +215,7 @@
                         <div class="form-appear relative">
                             <label class="block text-gray-300 mb-2 font-medium">Correo electrónico:</label>
                             <div class="relative">
-                                <input type="email" name="email" required class="input-field w-full p-3 rounded-lg bg-gray-800/50 text-white border border-gray-600 focus:border-emerald-500 focus:outline-none transition-all duration-300" placeholder="ejemplo@noir.com">
+                                <input type="email" name="email" required class="input-field w-full p-3 rounded-lg bg-gray-800/50 text-white border border-gray-600 focus:border-emerald-500 focus:outline-none transition-all duration-300" placeholder="ejemplo@BELLA.com">
                                 <div class="input-icon">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />

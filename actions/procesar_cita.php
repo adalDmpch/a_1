@@ -77,6 +77,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['error'] = "Acción no válida.";
             header('Location: ../public/empleado/inicio.php');
             exit;
+            $_SESSION['rechazo'] = "Acción no válida.";
+            header('Location: ../public/empleado/inicio.php');
+            exit;
         }
         
         // Actualizar el estado de la cita
@@ -85,6 +88,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt_actualizar->execute([$nuevo_estado, $id_cita]);
         
         $_SESSION['exito'] = $mensaje_exito;
+        $_SESSION['rechazo'] = $mensaje_exito;
+
         
     } catch (PDOException $e) {
         $_SESSION['error'] = "Error al procesar la cita: " . $e->getMessage();

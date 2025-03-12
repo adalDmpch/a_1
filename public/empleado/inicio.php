@@ -45,33 +45,41 @@ if (!$empleado) {
 }
 
 $empleado_id = $empleado['id']; // ID real del empleado
-
 // Mostrar mensajes de error o éxito
 if (isset($_SESSION['error'])) {
-    echo '<div class="max-w-7xl mx-auto mt-24 mb-4">
-            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg" role="alert">
-                <p>' . htmlspecialchars($_SESSION['error']) . '</p>
-            </div>
-          </div>';
+    echo '<script>
+            window.onload = function() {
+                showNotification("error", "' . htmlspecialchars($_SESSION['error']) . '");
+            };
+          </script>';
     unset($_SESSION['error']);
 }
 
 if (isset($_SESSION['exito'])) {
-    echo '<div class="max-w-7xl mx-auto mt-24 mb-4">
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg" role="alert">
-                <p>' . htmlspecialchars($_SESSION['exito']) . '</p>
-            </div>
-          </div>';
+    echo '<script>
+            window.onload = function() {
+                showNotification("success", "' . htmlspecialchars($_SESSION['exito']) . '");
+            };
+          </script>';
     unset($_SESSION['exito']);
 }
 
+if (isset($_SESSION['rechazo'])) {
+    echo '<script>
+            window.onload = function() {
+                showNotification("rejected", "' . htmlspecialchars($_SESSION['rechazo']) . '");
+            };
+          </script>';
+    unset($_SESSION['rechazo']);
+}
+  
 ?>
 
 <!-- Contenido principal -->
-<main class="pt-24 pb-16 px-4">
-    <div class="max-w-7xl mx-auto">
+<main class="pt-24 pb-24 px-8">
+    <div  class="max-w-7xl mx-auto flex-grow">
         <!-- Filtros y Acciones -->
-        <div class="bg-white rounded-2xl shadow-sm p-6 mb-8">
+        <div class="bg-white rounded-2xl shadow-sm p-12 mb-8">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
                 <!-- Encabezado -->
                 <div class="flex-grow">
@@ -89,10 +97,12 @@ if (isset($_SESSION['exito'])) {
                 </div>
             </div>
         </div>
-        
+        <div id="notification" class="fixed top-0 right-0 mt-8 mr-8 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-lg hidden">
+            <p id="notification-text"></p>
+        </div>
         <!-- Citas pendientes -->
-        <div class="bg-white rounded-2xl shadow-sm p-6 mb-8">
-            <h3 class="font-heading text-2xl font-bold mb-6">Mis citas pendientes</h3>
+        <div class="bg-white rounded-2xl shadow-sm p-8 mb-8">
+            <h3 class="font-heading text-2xl font-bold mb-8">Mis citas pendientes</h3>
 
             <div class="space-y-4">
                 <?php
@@ -112,7 +122,7 @@ if (isset($_SESSION['exito'])) {
                     if (count($citas) > 0) {
                         foreach ($citas as $cita) {
                             $hora = date("H:i", strtotime($cita['hora']));
-                            $estado_clase = 'bg-yellow-100 text-yellow-800';
+                            $estado_clase = 'bg-gray-100 text-gray-800'
                             ?>
                             <div class="border border-gray-200 rounded-xl p-4 hover:border-emerald-300 hover:shadow-md transition-all">
                                 <div class="flex justify-between items-start">
@@ -189,3 +199,60 @@ if (isset($_SESSION['exito'])) {
 
 <?php include_once '../templates/footerempleado.php'; ?>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+<script>
+    function showNotification(type, message) {
+        const notification = document.createElement('div');
+        notification.classList.add('notification', type);
+        notification.innerHTML = message;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 10);
+
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }, 5000); // El mensaje desaparecerá después de 5 segundos
+    }
+</script>
+
+</script>
+<style>
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 16px;
+        margin: 10px;
+        border-radius: 8px;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+        z-index: 1000;
+    }
+
+    .notification.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .notification.success {
+        background-color: #4caf50;
+        color: white;
+    }
+
+    .notification.error {
+        background-color: #f44336;
+        color: white;
+    }
+
+    .notification.rejected {
+        background-color: #ff9800;  /* Naranja */
+        color: white;
+    }
+</style>
+

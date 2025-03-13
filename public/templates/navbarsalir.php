@@ -5,8 +5,8 @@
                 <!-- Logo -->
                 <div class="flex items-center space-x-2 sm:space-x-3">
                     <h1 class="font-heading text-3xl font-bold text-gray-900">
-                        <span class="text-emerald-600">NOIR</span>
-                        <span class="text-gray-800">ELITE</span>
+                        <span class="text-emerald-600">BELLA</span>
+                        <span class="text-gray-800">HAIR</span>
                     </h1>
                 </div>
 

@@ -124,7 +124,7 @@ if (isset($_SESSION['mensaje'])) {
             box-shadow: 0 0 0 3px rgba(0,0,0,0.05);
         }
     </style>
-    <title>Noir - Registro </title>
+    <title>BELLA - Registro </title>
 </head>
 <body class="font-body bg-gray-50">
 
@@ -135,8 +135,8 @@ if (isset($_SESSION['mensaje'])) {
                 <!-- Logo -->
                 <div class="flex items-center space-x-2 sm:space-x-3">
                     <h1 class="font-heading text-3xl font-bold text-gray-900">
-                    <span class="text-emerald-600">NOIR</span> 
-                    <span class="text-gray-800">ELITE</span>
+                    <span class="text-emerald-600">BELLA</span> 
+                    <span class="text-gray-800">HAIR</span>
                 </h1>
                 </div>
                 <div class="hidden md:flex items-center space-x-6">
@@ -268,7 +268,7 @@ if (isset($_SESSION['mensaje'])) {
     <!-- Footer -->
     <footer class="bg-gray-900 text-white py-12">
         <div class="max-w-7xl mx-auto px-4 text-center">
-            <p class="text-gray-400">&copy; 2024 Noir Barbería. Todos los derechos reservados.</p>
+            <p class="text-gray-400">&copy; 2024 BELLA HAIR Barbería. Todos los derechos reservados.</p>
         </div>
     </footer>
     <script>

@@ -8,7 +8,7 @@
                     <a href="#privacidad" class="hover:text-emerald-400">Política de Privacidad</a>
                     <a href="#terminos" class="hover:text-emerald-400">Términos de Servicio</a>
                 </div>
-                <p class="mt-3">© 2024 Noir Elite. Todos los derechos reservados.</p>
+                <p class="mt-3">© 2024 BELLA HAIR. Todos los derechos reservados.</p>
             </div>
         </div>
     </footer>

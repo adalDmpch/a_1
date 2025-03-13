@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>Noir - Barbería & Estilistas</title>
+    <title>BELLA - Barbería & Estilistas</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Inter:wght@300;400;600&display=swap');
         
@@ -27,8 +27,8 @@
                 <!-- Logo -->
                 <div class="flex items-center space-x-2 sm:space-x-3">
                     <h1 class="font-heading text-3xl font-bold text-gray-900">
-                    <span class="text-emerald-600">NOIR</span> 
-                    <span class="text-gray-800">ELITE</span>
+                    <span class="text-emerald-600">BELLA</span> 
+                    <span class="text-gray-800">HAIR</span>
                 </h1>
                 </div>
                                 
@@ -124,9 +124,9 @@
         <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-12">
             <div class="grid md:grid-cols-2">
                 <div class="p-8">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-4">NOIR ELITE - Tu Salón de Belleza de Confianza</h3>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">BELLA HAIR - Tu Salón de Belleza de Confianza</h3>
                     <p class="text-gray-600 mb-6">
-                        Con más de una década de experiencia, NOIR ELITE se ha convertido en el referente de belleza y estilo en la ciudad. Nuestro equipo de estilistas profesionales está certificado en las últimas técnicas y tendencias internacionales.
+                        Con más de una década de experiencia, BELLA HAIR se ha convertido en el referente de belleza y estilo en la ciudad. Nuestro equipo de estilistas profesionales está certificado en las últimas técnicas y tendencias internacionales.
                     </p>
                     <div class="space-y-4 mb-6">
                         <div class="flex items-center">
@@ -233,7 +233,7 @@
         <div class="max-w-7xl mx-auto px-4">
             <div class="grid md:grid-cols-4 gap-8">
                 <div class="space-y-4">
-                    <h4 class="font-heading text-xl font-semibold">NOIR</h4>
+                    <h4 class="font-heading text-xl font-semibold">BELLA</h4>
                     <p class="text-gray-400">Barbería y Estilismo Moderno</p>
                 </div>
                 
@@ -250,7 +250,7 @@
                     <h5 class="font-semibold mb-4">Contacto</h5>
                     <ul class="space-y-2 text-gray-400">
                         <li>Av. Libertador 1234</li>
-                        <li>hola@noir.com</li>
+                        <li>hola@bella.com</li>
                         <li>+54 11 5678-9012</li>
                     </ul>
                 </div>
@@ -274,7 +274,7 @@
             </div>
             
             <div class="border-t border-gray-800 mt-8 pt-8 text-center">
-                <p class="text-gray-400">&copy; 2024 Noir Barbería. Todos los derechos reservados.</p>
+                <p class="text-gray-400">&copy; 2024 BELLA Barbería. Todos los derechos reservados.</p>
             </div>
         </div>
     </footer>

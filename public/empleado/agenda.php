@@ -7,7 +7,7 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "empleado") {
     exit();
 }
 
-$pageTitle = 'Noir Elite - Historial de Citas';
+$pageTitle = 'BELLA HAIR - Historial de Citas';
 include_once '../templates/headeremleado.php';
 include_once '../templates/navbarempleado.php';
 

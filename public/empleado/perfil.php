@@ -25,7 +25,7 @@ if (!$empleado) {
 }
 
 
-$pageTitle = 'Perfil - Noir Elite - Barbería & Estilistas';
+$pageTitle = 'Perfil - BELLA HAIR - Barbería & Estilistas';
 include_once '../templates/headeremleado.php';
 include_once '../templates/navbarempleado.php';
 

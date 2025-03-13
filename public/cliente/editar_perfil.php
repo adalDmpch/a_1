@@ -29,7 +29,7 @@ try {
     die("Error: " . $e->getMessage());
 }
 
-$pageTitle = 'Editar Perfil - Noir Elite';
+$pageTitle = 'Editar Perfil - BELLA HAIR';
 include_once '../templates/headercliente.php';
 include_once '../templates/navbarcliente.php';
 include_once '../templates/navbarclient.php';
@@ -62,7 +62,7 @@ include_once '../templates/navbarclient.php';
         <div class="bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 hover:shadow-3xl">
             <div class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white px-8 py-6">
                 <h2 class="text-3xl font-bold tracking-tight">Editar Perfil</h2>
-                <p class="mt-1 text-emerald-100 opacity-90">Actualiza tu información personal en Noir Elite</p>
+                <p class="mt-1 text-emerald-100 opacity-90">Actualiza tu información personal en BELLA HAIR</p>
             </div>
 
             <form action="../../actions/actualizar_perfil.php" method="POST" enctype="multipart/form-data" class="p-8 space-y-8">

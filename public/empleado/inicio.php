@@ -10,7 +10,7 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "empleado") {
 // Verifica que $_SESSION["user_id"] esté configurada correctamente
 // var_dump($_SESSION["user_id"]); // Esto debería mostrar el valor de user_id
 
-$pageTitle = 'Noir Elite - Agenda de Citas';
+$pageTitle = 'BELLA HAIR - Agenda de Citas';
 include_once '../templates/headeremleado.php';
 include_once '../templates/navbarempleado.php';
 

@@ -168,9 +168,9 @@ if (isset($_SESSION['error'])) {
         </div>
         
         <!-- Tabla de historial -->
-        <div class="bg-white rounded-2xl shadow-sm p-8 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table id="tablaCitas" class="min-w-full divide-y divide-gray-200">
+        <div class="bg-white rounded-2xl shadow-sm p-9 overflow-hidden">
+            <div class="overflow-x-auto p-8">
+                <table id="tablaCitas" class="min-w-full divide-y divide-gray-200 p-6">
                     <thead>
                         <tr>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -279,7 +279,7 @@ if (isset($_SESSION['error'])) {
                                             <?php echo $estadoTexto; ?>
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium p-8">
                                         <button onclick="mostrarDetallesCita(<?php echo $cita['id']; ?>)" class="text-emerald-600 hover:text-emerald-800 mr-3">Ver detalles</button>
                                     </td>
                                 </tr>
@@ -287,7 +287,7 @@ if (isset($_SESSION['error'])) {
                         <?php else: ?>
                             <tr>
                                 <td colspan="7" class="px-6 py-4 text-center text-gray-500 p-8">
-                                    <div class="text-center py-12 animate__animated animate__fadeIn">
+                                    <div class="text-center py-12 animate__animated animate__fadeIn p-8">
                                         <svg class="w-32 h-32 mx-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>

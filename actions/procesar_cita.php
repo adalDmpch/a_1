@@ -66,6 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Definir el nuevo estado según la acción
         $nuevo_estado = '';
         $mensaje_exito = '';
+
         
         if ($accion === 'aceptar') {
             $nuevo_estado = 'confirmada';
@@ -77,9 +78,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['error'] = "Acción no válida.";
             header('Location: ../public/empleado/inicio.php');
             exit;
-            $_SESSION['rechazo'] = "Acción no válida.";
-            header('Location: ../public/empleado/inicio.php');
-            exit;
         }
         
         // Actualizar el estado de la cita
@@ -88,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt_actualizar->execute([$nuevo_estado, $id_cita]);
         
         $_SESSION['exito'] = $mensaje_exito;
-        $_SESSION['rechazo'] = $mensaje_exito;
+
 
         
     } catch (PDOException $e) {

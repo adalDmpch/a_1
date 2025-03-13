@@ -135,8 +135,6 @@ if (!$cita) {
 <div class="flex justify-end space-x-3 pt-4 border-t">
     <form action="../../actions/actulizar_modal.php" method="POST">
         <input type="hidden" name="cita_id" value="<?php echo $cita['id']; ?>">
-        <input type="hidden" name="estado" value="completada">
-        <input type="hidden" name="estado" value="no_asistio">
 
         <!-- Mostrar solo el botón "Cerrar" si el estado no es "confirmada" -->
         <?php if ($cita['estado'] !== 'confirmada'): ?>
@@ -145,16 +143,17 @@ if (!$cita) {
             </button>
         <?php endif; ?>
 
-        <!-- Mostrar los botones "Completar Cita" y "No asistió" solo si el estado no es "rechazada", "completada" o "no_asisitio" -->
+        <!-- Mostrar los botones "Completar Cita" y "No asistió" solo si el estado no es "rechazada", "completada" o "no_asistio" -->
         <?php if (!in_array($cita['estado'], ['rechazada', 'completada', 'no_asistio'])): ?>
-            <button type="submit" class="bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-emerald-700">
+            <button type="submit" name="estado" value="completada" class="bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-emerald-700">
                 Completar Cita
             </button>
-            <button type="submit" class="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700">
+            <button type="submit" name="estado" value="no_asistio" class="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700">
                 No asistió
             </button>
         <?php endif; ?>
     </form>
+
 
     <?php 
         if (isset($mensaje)) {

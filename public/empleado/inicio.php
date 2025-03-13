@@ -64,15 +64,6 @@ if (isset($_SESSION['exito'])) {
     unset($_SESSION['exito']);
 }
 
-if (isset($_SESSION['rechazo'])) {
-    echo '<script>
-            window.onload = function() {
-                showNotification("rejected", "' . htmlspecialchars($_SESSION['rechazo']) . '");
-            };
-          </script>';
-    unset($_SESSION['rechazo']);
-}
-  
 ?>
 
 <!-- Contenido principal -->

@@ -210,10 +210,25 @@ if (isset($_SESSION['error'])) {
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
                                             <div class="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-medium">
-                                                <?php 
-                                                    $iniciales = substr($cita['nombre'], 0, 1);
-                                                    echo $iniciales; 
-                                                ?>
+                                            <?php 
+                                                $nombre = $cita['nombre']; 
+                                                $nombres = explode(' ', $nombre);
+
+                                                // Obtenemos la primera inicial
+                                                $inicial_1 = substr($nombre, 0, 1);
+
+                                                // Verificamos si hay al menos dos palabras en el nombre
+                                                if (count($nombres) > 1) {
+                                                    // Si hay más de un nombre, obtenemos la inicial del segundo nombre
+                                                    $inicial_2 = substr($nombres[1], 0, 1);
+                                                } else {
+                                                    // Si solo hay un nombre, dejamos la segunda inicial en blanco o algún valor por defecto
+                                                    $inicial_2 = '';
+                                                }
+
+                                            // Mostramos las iniciales
+                                            echo $inicial_1 . $inicial_2;
+                                            ?>   
                                             </div>
                                             <div class="ml-4">
                                                 <div class="text-sm font-medium text-gray-900">

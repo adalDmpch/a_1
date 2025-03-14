@@ -61,6 +61,11 @@ if ($id > 0) {
 // Imagen por defecto con ruta absoluta
 header("Content-Type: image/jpeg");
 readfile("assets/images/mapache.png");
-
+if (file_exists($rutaImagen)) {
+    readfile($rutaImagen);
+} else {
+    error_log("Imagen por defecto no encontrada en: " . $rutaImagen);
+    echo "Imagen no disponible";
+}
 exit;
 ?>

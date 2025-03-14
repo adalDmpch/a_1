@@ -41,6 +41,8 @@ if (!$cita) {
     exit('Cita no encontrada.');
 }
 
+
+
 ?>
 
 <!-- Cabecera del modal -->
@@ -89,7 +91,25 @@ if (!$cita) {
         <h3 class="text-lg font-medium text-gray-900 mb-4">Información del cliente</h3>
         <div class="flex items-center mb-4">
             <div class="flex-shrink-0 h-16 w-16 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-medium text-xl">
-                <?php echo substr($cita['nombre'], 0, 1) . substr(explode(' ', $cita['nombre'])[1], 0, 1); ?>
+                <?php 
+                    $nombre = $cita['nombre']; 
+                    $nombres = explode(' ', $nombre);
+
+                    // Obtenemos la primera inicial
+                    $inicial_1 = substr($nombre, 0, 1);
+
+                    // Verificamos si hay al menos dos palabras en el nombre
+                    if (count($nombres) > 1) {
+                        // Si hay más de un nombre, obtenemos la inicial del segundo nombre
+                        $inicial_2 = substr($nombres[1], 0, 1);
+                    } else {
+                        // Si solo hay un nombre, dejamos la segunda inicial en blanco o algún valor por defecto
+                        $inicial_2 = '';
+                    }
+
+                // Mostramos las iniciales
+                echo $inicial_1 . $inicial_2;
+                ?>            
             </div>
             <div class="ml-4">
                 <div class="text-xl font-medium text-gray-900"><?php echo $cita['nombre']; ?></div>

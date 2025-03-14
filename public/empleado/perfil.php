@@ -19,11 +19,6 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute([$user_id]);
 $empleado = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Verificar si se encontraron datos
-if (!$empleado) {
-    die("No se encontró información en la tabla empleados para este usuario.");
-}
-
 
 $pageTitle = 'Perfil - BELLA HAIR - Barbería & Estilistas';
 include_once '../templates/headeremleado.php';
@@ -67,8 +62,8 @@ include_once '../templates/navbarempleado.php';
                     </div>
                     <div class="absolute -bottom-16 left-8 md:left-10">
                         <div class="h-32 w-32 rounded-full ring-4 ring-white bg-white shadow-md overflow-hidden">
-                            <img src="../uploads/<?= htmlspecialchars(basename($empleado['foto_de_perfil'] ?? 'default.png')) ?>" alt="Foto de perfil"
-                                class="h-full w-full object-cover" onchange="previewImage(event)">
+                        <img src="/a_1/actions/mostrar_img.php?id=<?php echo $empleado['id']; ?>" />
+        
                         </div>
                     </div>
                 </div>

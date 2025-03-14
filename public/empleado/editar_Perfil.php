@@ -32,39 +32,35 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update_profile"])) {
     try {
         $pdo->beginTransaction();
     
-        // Manejo de imagen de perfil (solo si se sube una nueva)
+       // Verificamos si se subió una nueva imagen
+        // Verificamos si se subió una nueva imagen
         if (!empty($_FILES['foto_de_perfil']['name']) && $_FILES['foto_de_perfil']['error'] === UPLOAD_ERR_OK) {
-            $foto_nombre = basename($_FILES['foto_de_perfil']['name']);
-            $uploads_dir = '../uploads/'; // Usamos la carpeta "public/uploads"
-
-            // Verificar si la carpeta 'uploads' existe dentro de 'public'
-            // Ya no la creamos si existe
-            if (!is_dir($uploads_dir)) {
-                mkdir($uploads_dir, 0777, true);
-            }  
-             
-            $foto_destino = $uploads_dir . $foto_nombre;
-
-            if (move_uploaded_file($_FILES['foto_de_perfil']['tmp_name'], $foto_destino)) {
-                $foto_perfil = $uploads_dir . $foto_nombre; // Solo cambiar si hay una nueva imagen
-            } else {
-                throw new Exception("Error al guardar la imagen.");
+            // Leemos la imagen como datos binarios
+            $foto_binaria = file_get_contents($_FILES['foto_de_perfil']['tmp_name']);
+            
+            if ($foto_binaria === false) {
+                die("Error al leer la imagen.");
             }
+            
+            // Actualizamos la tabla empleados con los nuevos datos
+            $sql_update_empleado = "UPDATE empleados SET nombreempleado = ?, phoneempleado = ?, edad = ?, descripcion = ?, foto_de_perfil = ? WHERE id = ?";
+            
+            $stmt = $pdo->prepare($sql_update_empleado);
+            // Importante: usar PDO::PARAM_LOB para datos binarios
+            $stmt->bindParam(1, $nombre);
+            $stmt->bindParam(2, $telefono);
+            $stmt->bindParam(3, $edad);
+            $stmt->bindParam(4, $descripcion);
+            $stmt->bindParam(5, $foto_binaria, PDO::PARAM_LOB); // Este es el cambio crucial
+            $stmt->bindParam(6, $empleado["id"]);
+            $stmt->execute();
+        } else {
+            // Si no hay nueva imagen, actualizar todo excepto la imagen
+            $sql_update_empleado = "UPDATE empleados SET nombreempleado = ?, phoneempleado = ?, edad = ?, descripcion = ? WHERE id = ?";
+            $stmt = $pdo->prepare($sql_update_empleado);
+            $stmt->execute([$nombre, $telefono, $edad, $descripcion, $empleado["id"]]);
         }
 
-        // Actualizar empleados, asegurando que foto_de_perfil solo se actualiza si se subió una nueva imagen
-        $sql_update_empleado = "UPDATE empleados SET nombreempleado = ?, phoneempleado = ?, edad = ?, descripcion = ?". 
-                               (!empty($_FILES['foto_de_perfil']['name']) ? ", foto_de_perfil = ?" : "") . 
-                               " WHERE id = ?";
-        $params = [$nombre, $telefono, $edad, $descripcion];
-
-        if (!empty($_FILES['foto_de_perfil']['name'])) {
-            $params[] = $foto_perfil;
-        }
-        $params[] = $empleado["id"];
-
-        $stmt = $pdo->prepare($sql_update_empleado);
-        $stmt->execute($params);
     
         // Desvincular y actualizar email en empleados y usuarios
         $sql_unlink_email = "UPDATE empleados SET email_empleado = NULL WHERE email_empleado = ?";
@@ -77,7 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update_profile"])) {
         $pdo->prepare($sql_relink_email)->execute([$nuevo_email, $empleado["id"]]);
 
         $pdo->commit();
-        echo "<script>alert('Perfil actualizado correctamente'); window.location.href='perfil.php';</script>";
+        echo "<script >alert('Perfil actualizado correctamente'); window.location.href='perfil.php';</script>";
     
     } catch (Exception $e) {
         $pdo->rollBack();
@@ -100,11 +96,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update_profile"])) {
 
             <div class="relative">
                 <div class="absolute -bottom-12 left-8 group">
-                    <img id="preview" 
-                            src="<?= !empty($empleado['foto_de_perfil']) ? $empleado['foto_de_perfil'] : '../public/uploads/default.png' ?>" 
-                            alt="Foto de perfil" 
-                            class="h-32 w-32 rounded-full object-cover border-4 border-white">
-                    
+                <img id="preview" src="/a_1/actions/mostrar_img.php?id=<?php echo $empleado['foto_de_perfil']; ?>"
+                alt="Foto de perfil" 
+                            class="h-32 w-32 rounded-full object-cover border-4 border-white"  onerror="this.classList.add('hidden')" onload="this.classList.remove('hidden')" >
                         <label for="foto_de_perfil" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-50 rounded-full transition-all duration-200 cursor-pointer">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white opacity-0 group-hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -183,3 +177,30 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update_profile"])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
 
+    <script>
+    function previewImage(event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById('preview');
+        const altText = document.getElementById('alt-text'); // Capturar el texto alternativo
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.classList.remove('hidden'); // Mostrar imagen
+                if (altText) altText.classList.add('hidden'); // Ocultar el texto
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
+
+<style>
+    .input-field {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        outline: none;
+    }
+</style>

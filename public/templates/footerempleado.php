@@ -64,14 +64,5 @@
                 <p class="text-gray-500 text-sm">&copy; 2024 Noir Elite Barbería. Todos los derechos reservados.</p>
             </div>
         </div>
-    </footer>
+</footer>
 
-<!-- Script para toggle del menú móvil -->
-<script>
-    const menuButton = document.getElementById('menu-toggle');
-    const mobileMenu = document.getElementById('mobile-menu');
-
-    menuButton.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
-    });
-</script>

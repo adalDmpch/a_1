@@ -6,8 +6,6 @@ require '../config/confg.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
-
-
         // Recoger datos del formulario
         $nombre = $_POST["nombre"];
         $fecha = $_POST["fecha"];
@@ -27,28 +25,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             throw new Exception("El correo electrónico ya está registrado. Usa otro.");
         }
 
-        // Manejo de imagen de perfil
+        // Manejo de imagen de perfil como datos binarios
         if (isset($_FILES['foto_de_perfil']) && $_FILES['foto_de_perfil']['error'] === UPLOAD_ERR_OK) {
-            // Aquí verificamos que el archivo fue cargado correctamente
-            $foto_nombre = basename($_FILES['foto_de_perfil']['name']);
-            $uploads_dir = '../public/uploads/';
-
-            // Creamos el directorio de uploads si no existe
-            if (!is_dir($uploads_dir)) {
-                mkdir($uploads_dir, 0777, true);
+            // Leer el contenido binario de la imagen
+            $foto_binaria = file_get_contents($_FILES['foto_de_perfil']['tmp_name']);
+            
+            if ($foto_binaria === false) {
+                throw new Exception("Error al leer la imagen.");
             }
-
-            $foto_destino = $uploads_dir . $foto_nombre;
-
-            // Movemos el archivo al destino
-            if (!move_uploaded_file($_FILES['foto_de_perfil']['tmp_name'], $foto_destino)) {
-                throw new Exception("Error al guardar la imagen.");
-            }
-
-            $foto_perfil = $foto_destino; // Guardar la ruta de la imagen
         } else {
-            throw new Exception("Error al guardar la imagen");
+            throw new Exception("Error al subir la imagen. Por favor, intenta de nuevo.");
         }
+
+        // Iniciar transacción para asegurar que todas las operaciones se completen
+        $pdo->beginTransaction();
 
         // Insertamos primero el usuario sin cliente_id
         $query_insert_user = "INSERT INTO usuarios (email_usuario, password, rol, activo) 
@@ -59,7 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->execute();
         $usuario_id = $stmt->fetchColumn();
 
-        // Insertamos el cliente
+        // Insertamos el cliente con la imagen como datos binarios
         $query_insert_cliente = "INSERT INTO cliente (nombre, fecha, genero, email_cliente, phone, address, foto_de_perfil) 
                                  VALUES (:nombre, :fecha, :genero, :email, :tel, :direccion, :foto_de_perfil) RETURNING id";
         $stmt = $pdo->prepare($query_insert_cliente);
@@ -69,7 +59,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bindValue(':email', $email, PDO::PARAM_STR);
         $stmt->bindValue(':tel', $tel, PDO::PARAM_STR);
         $stmt->bindValue(':direccion', $direccion, PDO::PARAM_STR);
-        $stmt->bindValue(':foto_de_perfil', $foto_perfil, PDO::PARAM_STR);
+        
+        // Esta es la parte importante: usar bindParam con PDO::PARAM_LOB para guardar datos binarios
+        $stmt->bindParam(':foto_de_perfil', $foto_binaria, PDO::PARAM_LOB);
         $stmt->execute();
         $cliente_id = $stmt->fetchColumn();
 
@@ -80,6 +72,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bindValue(':usuario_id', $usuario_id, PDO::PARAM_INT);
         $stmt->execute();
 
+        // Confirmar transacción
+        $pdo->commit();
+
         // Guardamos el mensaje de éxito en la sesión
         $_SESSION['mensaje'] = "Registro exitoso. ¡Bienvenido!";
         
@@ -88,8 +83,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
 
     } catch (PDOException $e) {
+        // Revertir cambios si hay error
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
         $mensaje = "Error en la conexión: " . $e->getMessage();
     } catch (Exception $e) {
+        // Revertir cambios si hay error
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
         $mensaje = $e->getMessage();
     }
 }

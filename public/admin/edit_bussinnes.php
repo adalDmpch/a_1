@@ -44,7 +44,7 @@ include_once '../templates/mode.php';
                 
                 <div class="py-4 flex flex-col items-center">
                     <div class="relative group w-32 h-32 rounded-full border-4 border-gray-200 bg-black bg-opacity-40 flex items-center justify-center">
-                        <img id="preview" src="../actions/get_image.php?id=<?= $negocio['id'] ?>" 
+                        <img id="preview" src="/a_1/actions/get_image.php?id=<?= $negocio['id'] ?>" 
                             alt="Logo del negocio" 
                             class="w-full h-full rounded-full object-cover hidden" 
                             onerror="this.classList.add('hidden')" 

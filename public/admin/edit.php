@@ -52,7 +52,7 @@ include_once '../templates/mode.php';
             <!-- Imagen de perfil -->
             <div class="py-4 flex flex-col items-center">
     <div class="relative group w-32 h-32 rounded-full border-4 border-gray-200 bg-black bg-opacity-40 flex items-center justify-center">
-        <img id="preview" src="../actions/get_image.php?id=<?= $empleado['id'] ?>" alt="Foto de perfil" class="w-full h-full rounded-full object-cover hidden" onerror="this.classList.add('hidden')" onload="this.classList.remove('hidden')" />
+        <img id="preview" src="/a_1/actions/mostrar_img.php?id=<?php echo $empleado['id']; ?>" alt="Foto de perfil" class="w-full h-full rounded-full object-cover hidden" onerror="this.classList.add('hidden')" onload="this.classList.remove('hidden')" />
         <span id="alt-text" class="text-gray-200 text-sm absolute">Cambiar foto</span>
         <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100">
             <label for="foto_de_perfil" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-50 rounded-full transition-all duration-200 cursor-pointer">

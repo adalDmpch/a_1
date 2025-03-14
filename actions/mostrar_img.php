@@ -8,6 +8,7 @@ if (!isset($pdo) || !($pdo instanceof PDO)) {
 }
 
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+$tipo = isset($_GET['tipo']) ? $_GET['tipo'] : 'empleado'; // Por defecto busca en empleados
 
 if ($id > 0) {
     try {
@@ -15,15 +16,22 @@ if ($id > 0) {
         $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
         $pdo->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, false);
         
-        // Recuperar la imagen del empleado según el ID
-        $stmt = $pdo->prepare("SELECT foto_de_perfil FROM empleados WHERE id = :id");
+        // Preparar la consulta según el tipo
+        if ($tipo === 'negocio') {
+            $stmt = $pdo->prepare("SELECT logo FROM negocio WHERE id = :id");
+            $column = 'logo';
+        } else {
+            $stmt = $pdo->prepare("SELECT foto_de_perfil FROM empleados WHERE id = :id");
+            $column = 'foto_de_perfil';
+        }
+        
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
         
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        if ($row && isset($row['foto_de_perfil']) && $row['foto_de_perfil'] !== null) {
-            $imagen_binaria = $row['foto_de_perfil'];
+        if ($row && isset($row[$column]) && $row[$column] !== null) {
+            $imagen_binaria = $row[$column];
             
             // Si es un recurso, convertirlo a cadena
             if (is_resource($imagen_binaria)) {
@@ -49,7 +57,7 @@ if ($id > 0) {
         }
         
         // Si llegamos aquí, no se encontró la imagen o estaba vacía
-        error_log("No se encontró la imagen para el ID: $id o está vacía");
+        error_log("No se encontró la imagen para el ID: $id, tipo: $tipo o está vacía");
         // Continuar al código de la imagen por defecto
         
     } catch (Exception $e) {
@@ -59,8 +67,8 @@ if ($id > 0) {
 }
 
 // Imagen por defecto con ruta absoluta
+$rutaImagen = "assets/images/mapache.png";
 header("Content-Type: image/jpeg");
-readfile("assets/images/mapache.png");
 if (file_exists($rutaImagen)) {
     readfile($rutaImagen);
 } else {

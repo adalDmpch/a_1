@@ -44,11 +44,11 @@ include_once '../templates/mode.php';
                 
                 <div class="py-4 flex flex-col items-center">
                     <div class="relative group w-32 h-32 rounded-full border-4 border-gray-200 bg-black bg-opacity-40 flex items-center justify-center">
-                        <img id="preview" src="../actions/get_image.php?id=<?= $negocio['id'] ?>" 
-                            alt="Logo del negocio" 
-                            class="w-full h-full rounded-full object-cover hidden" 
-                            onerror="this.classList.add('hidden')" 
-                            onload="this.classList.remove('hidden')" />
+                    <img id="preview" src="/a_1/actions/mostrar_img.php?id=<?php echo $negocio['id']; ?>&tipo=negocio"
+     alt="Logo del negocio" 
+     class="w-full h-full rounded-full object-cover" 
+     onerror="this.style.display='none'; document.getElementById('alt-text').style.display='block';" 
+     onload="this.style.display='block'; document.getElementById('alt-text').style.display='none';" />
 
                         <span id="alt-text" class="text-gray-200 text-sm absolute">Cambiar foto</span>
                         <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100">
@@ -156,16 +156,16 @@ include_once '../templates/mode.php';
 </div>
 
 <script>
-    function previewImage(event) {
-        var reader = new FileReader();
-        reader.onload = function() {
-            var preview = document.getElementById('preview');
-            preview.src = reader.result;
-            preview.classList.remove('hidden');
-            document.getElementById('alt-text').classList.add('hidden');
-        }
-        reader.readAsDataURL(event.target.files[0]);
+function previewImage(event) {
+    var reader = new FileReader();
+    reader.onload = function() {
+        var preview = document.getElementById('preview');
+        preview.src = reader.result;
+        preview.style.display = 'block';
+        document.getElementById('alt-text').style.display = 'none';
     }
+    reader.readAsDataURL(event.target.files[0]);
+}
 
     function togglePassword(inputId) {
         const input = document.getElementById(inputId);

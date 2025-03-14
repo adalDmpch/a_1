@@ -1,5 +1,5 @@
 <?php
- require '../config/confg.php';
+require '../config/confg.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tipo = isset($_POST['tipo']) ? trim($_POST['tipo']) : null;
@@ -12,14 +12,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ubicaciondelnegocio = isset($_POST['ubicaciondelnegocio']) ? trim($_POST['ubicaciondelnegocio']) : null;
             $phonenegocio = isset($_POST['phonenegocio']) ? trim($_POST['phonenegocio']) : null;
             $emailnegocio = isset($_POST['emailnegocio']) ? trim($_POST['emailnegocio']) : null;
-            
-            $logo = isset($_POST['logo']) ? trim($_POST['logo']) : null;
             $dias_operacion = isset($_POST['dias_operacion']) ? implode(', ', $_POST['dias_operacion']) : null;
             $horas_operacion = isset($_POST['horas_operacion']) ? trim($_POST['horas_operacion']) : null;
             $horas_fin = isset($_POST['horas_fin']) ? trim($_POST['horas_fin']) : null;
             $metodo_de_pago_id = isset($_POST['metodo_de_pago_id']) ? intval($_POST['metodo_de_pago_id']) : null;
-
-            // Obtención de los servicios seleccionados
             $servicios = isset($_POST['servicios']) ? $_POST['servicios'] : [];
 
             if (!$id || !$nombrenegocio || !$tipodenegocio || !$ubicaciondelnegocio || !$phonenegocio || !$emailnegocio || !$dias_operacion || !$horas_operacion || !$horas_fin || !$metodo_de_pago_id || empty($servicios)) {
@@ -28,10 +24,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             try {
                 $pdo->beginTransaction();
-        
-                // Actualizar los datos del negocio
-                $stmt = $pdo->prepare("UPDATE negocio SET nombrenegocio = ?, tipodenegocio = ?, ubicaciondelnegocio = ?, phonenegocio = ?, emailnegocio = ?, dias_operacion = ?, horas_operacion = ?, horas_fin = ?, metodo_de_pago_id = ? WHERE id = ?");
-                $stmt->execute([$nombrenegocio, $tipodenegocio, $ubicaciondelnegocio, $phonenegocio, $emailnegocio, $dias_operacion, $horas_operacion, $horas_fin, $metodo_de_pago_id, $id]);
+                
+                // Verificar si se ha subido un nuevo logo
+                if (isset($_FILES['logo']) && $_FILES['logo']['error'] === UPLOAD_ERR_OK) {
+                    // Leer el nuevo logo en binario
+                    $logo_binario = file_get_contents($_FILES['logo']['tmp_name']);
+                    
+                    // Preparar para PostgreSQL si es necesario
+                    if (function_exists('pg_escape_bytea')) {
+                        $logo_escapado = pg_escape_bytea($logo_binario);
+                        $logo = $logo_escapado; // Asignar a la variable que usarás en bindParam
+                    } else {
+                        $logo = $logo_binario; // Para PDO
+                    }
+                    
+                    // Actualizar los datos del negocio incluyendo el logo
+                    $stmt = $pdo->prepare("UPDATE negocio SET nombrenegocio = ?, tipodenegocio = ?, ubicaciondelnegocio = ?, 
+                                          phonenegocio = ?, emailnegocio = ?, dias_operacion = ?, horas_operacion = ?, 
+                                          horas_fin = ?, metodo_de_pago_id = ?, logo = ? WHERE id = ?");
+                    $stmt->bindParam(1, $nombrenegocio, PDO::PARAM_STR);
+                    $stmt->bindParam(2, $tipodenegocio, PDO::PARAM_STR);
+                    $stmt->bindParam(3, $ubicaciondelnegocio, PDO::PARAM_STR);
+                    $stmt->bindParam(4, $phonenegocio, PDO::PARAM_STR);
+                    $stmt->bindParam(5, $emailnegocio, PDO::PARAM_STR);
+                    $stmt->bindParam(6, $dias_operacion, PDO::PARAM_STR);
+                    $stmt->bindParam(7, $horas_operacion, PDO::PARAM_STR);
+                    $stmt->bindParam(8, $horas_fin, PDO::PARAM_STR);
+                    $stmt->bindParam(9, $metodo_de_pago_id, PDO::PARAM_INT);
+                    $stmt->bindParam(10, $logo, PDO::PARAM_LOB);
+                    $stmt->bindParam(11, $id, PDO::PARAM_INT);
+                    $stmt->execute();
+                } else {
+                    // Actualizar los datos del negocio sin cambiar el logo
+                    $stmt = $pdo->prepare("UPDATE negocio SET nombrenegocio = ?, tipodenegocio = ?, ubicaciondelnegocio = ?, 
+                                          phonenegocio = ?, emailnegocio = ?, dias_operacion = ?, horas_operacion = ?, 
+                                          horas_fin = ?, metodo_de_pago_id = ? WHERE id = ?");
+                    $stmt->execute([$nombrenegocio, $tipodenegocio, $ubicaciondelnegocio, $phonenegocio, $emailnegocio, 
+                                  $dias_operacion, $horas_operacion, $horas_fin, $metodo_de_pago_id, $id]);
+                }
         
                 // Eliminar los servicios actuales del negocio
                 $stmt = $pdo->prepare("DELETE FROM negocio_servicios WHERE negocio_id = ?");
@@ -52,26 +82,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 die("Error en la base de datos: " . $e->getMessage());
             }
             break;
-
             
         case 'empleado':
             $id = isset($_POST['id']) ? intval($_POST['id']) : null;
             $nombreempleado = isset($_POST['nombreempleado']) ? trim($_POST['nombreempleado']) : null;
             $phoneempleado = isset($_POST['phoneempleado']) ? trim($_POST['phoneempleado']) : null;
-            $email_empleado_nuevo = isset($_POST['email_empleado']) ? trim($_POST['email_empleado']) : null;
-            $contra_empleados = isset($_POST['contra_empleados']) && !empty($_POST['contra_empleados']) ? password_hash($_POST['contra_empleados'], PASSWORD_BCRYPT) : null;
+            $email_empleado = isset($_POST['email_empleado']) ? trim($_POST['email_empleado']) : null;
             $edad = isset($_POST['edad']) ? intval($_POST['edad']) : null;
             $negocio_id = isset($_POST['negocio_id']) ? intval($_POST['negocio_id']) : null;
             $disponibilidad = isset($_POST['disponibilidad']) ? trim($_POST['disponibilidad']) : null;
             $metodo_de_cobro = isset($_POST['metodo_de_cobro']) ? trim($_POST['metodo_de_cobro']) : null;
             $descripcion = isset($_POST['descripcion']) ? trim($_POST['descripcion']) : null;
+            // La contraseña solo se actualiza si se proporciona
+            $contra_empleados = isset($_POST['contra_empleados']) && !empty($_POST['contra_empleados']) ? 
+                               password_hash($_POST['contra_empleados'], PASSWORD_DEFAULT) : null;
 
-            if (!$id || !$nombreempleado || !$phoneempleado || !$email_empleado_nuevo || !$edad || !$negocio_id || !$disponibilidad || !$metodo_de_cobro || !$descripcion) {
+            if (!$id || !$nombreempleado || !$phoneempleado || !$email_empleado || !$edad || !$negocio_id || 
+                !$disponibilidad || !$metodo_de_cobro || !$descripcion) {
                 die("Error: Todos los campos son obligatorios.");
             }
 
             try {
-                $pdo->beginTransaction(); // Iniciar transacción
+                $pdo->beginTransaction();
             
                 // Obtener el email actual del empleado
                 $stmt = $pdo->prepare("SELECT email_empleado FROM empleados WHERE id = ?");
@@ -84,55 +116,71 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
                 $email_empleado_actual = $empleado_actual['email_empleado'];
             
-                // Si el email cambió, actualizarlo en la tabla usuarios y empleados
-                if (!empty($email_empleado_nuevo) && $email_empleado_nuevo !== $email_empleado_actual) {
-                    // 1️⃣ Primero, eliminar temporalmente la relación en `empleados`
-                    $stmt = $pdo->prepare("UPDATE empleados SET email_empleado = NULL WHERE id = ?");
-                    $stmt->execute([$id]);
-
-                    // 2️⃣ Verificar si el email actual tiene un usuario vinculado
-                    $stmt = $pdo->prepare("SELECT id FROM usuarios WHERE email_usuario = ?");
-                    $stmt->execute([$email_empleado_actual]);
-                    $usuario_actual = $stmt->fetch(PDO::FETCH_ASSOC);
-
-                    if ($usuario_actual) {
-                        // 3️⃣ Actualizar el email en la tabla usuarios
-                        $stmt = $pdo->prepare("UPDATE usuarios SET email_usuario = ? WHERE id = ?");
-                        $stmt->execute([$email_empleado_nuevo, $usuario_actual['id']]);
-                    } else {
-                        throw new Exception("Error: No se encontró un usuario vinculado al empleado.");
-                    }
-
-                    // 4️⃣ Volver a asignar el email en la tabla empleados
-                    $stmt = $pdo->prepare("UPDATE empleados SET email_empleado = ? WHERE id = ?");
-                    $stmt->execute([$email_empleado_nuevo, $id]);
-                }
-
-
-            
-                // Si se proporciona una nueva contraseña, actualizarla en `usuarios`
-                if (!empty($contra_empleados)) {
-                    $email_target = !empty($email_empleado_nuevo) ? $email_empleado_nuevo : $email_empleado_actual;
+                // Si el email cambió, actualizarlo en la tabla usuarios
+                if ($email_empleado !== $email_empleado_actual) {
+                    // Buscar el usuario asociado al empleado
+                    $stmt = $pdo->prepare("SELECT id FROM usuarios WHERE email_usuarios = ? AND empleado_id = ?");
+                    $stmt->execute([$email_empleado_actual, $id]);
+                    $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
                     
-                    $stmt = $pdo->prepare("UPDATE usuarios SET password = ? WHERE email_usuario = ?");
-                    $stmt->execute([$contra_empleados, $email_target]); // Usa el hash directamente
+                    if ($usuario) {
+                        // Actualizar el email en la tabla usuarios
+                        $stmt = $pdo->prepare("UPDATE usuarios SET email_usuarios = ? WHERE id = ?");
+                        $stmt->execute([$email_empleado, $usuario['id']]);
+                    }
+                }
+            
+                // Si se proporcionó una nueva contraseña, actualizarla
+                if ($contra_empleados) {
+                    $stmt = $pdo->prepare("UPDATE usuarios SET password = ? WHERE empleado_id = ?");
+                    $stmt->execute([$contra_empleados, $id]);
                 }
                 
+                // Verificar si se ha subido una nueva imagen de perfil
+                if (isset($_FILES['foto_de_perfil']) && $_FILES['foto_de_perfil']['error'] === UPLOAD_ERR_OK) {
+                    // Leer la nueva imagen en binario
+                    $foto_binaria = file_get_contents($_FILES['foto_de_perfil']['tmp_name']);
+                    
+                    // Preparar para PostgreSQL si es necesario
+                    if (function_exists('pg_escape_bytea')) {
+                        $foto_escapada = pg_escape_bytea($foto_binaria);
+                        $foto_de_perfil = $foto_escapada; // Asignar a la variable que usarás en bindParam
+                    } else {
+                        $foto_de_perfil = $foto_binaria; // Para PDO
+                    }
+                    
+                    // Actualizar los datos del empleado incluyendo la foto
+                    $stmt = $pdo->prepare("UPDATE empleados SET nombreempleado = ?, phoneempleado = ?, email_empleado = ?, 
+                                          edad = ?, negocio_id = ?, disponibilidad = ?, metodo_de_cobro = ?, 
+                                          descripcion = ?, foto_de_perfil = ? WHERE id = ?");
+                    $stmt->bindParam(1, $nombreempleado, PDO::PARAM_STR);
+                    $stmt->bindParam(2, $phoneempleado, PDO::PARAM_STR);
+                    $stmt->bindParam(3, $email_empleado, PDO::PARAM_STR);
+                    $stmt->bindParam(4, $edad, PDO::PARAM_INT);
+                    $stmt->bindParam(5, $negocio_id, PDO::PARAM_INT);
+                    $stmt->bindParam(6, $disponibilidad, PDO::PARAM_STR);
+                    $stmt->bindParam(7, $metodo_de_cobro, PDO::PARAM_STR);
+                    $stmt->bindParam(8, $descripcion, PDO::PARAM_STR);
+                    $stmt->bindParam(9, $foto_de_perfil, PDO::PARAM_LOB);
+                    $stmt->bindParam(10, $id, PDO::PARAM_INT);
+                    $stmt->execute();
+                } else {
+                    // Actualizar los datos del empleado sin cambiar la foto
+                    $stmt = $pdo->prepare("UPDATE empleados SET nombreempleado = ?, phoneempleado = ?, email_empleado = ?, 
+                                          edad = ?, negocio_id = ?, disponibilidad = ?, metodo_de_cobro = ?, 
+                                          descripcion = ? WHERE id = ?");
+                    $stmt->execute([$nombreempleado, $phoneempleado, $email_empleado, $edad, $negocio_id, 
+                                  $disponibilidad, $metodo_de_cobro, $descripcion, $id]);
+                }
             
-                // Actualizar datos del empleado
-                $stmt = $pdo->prepare("UPDATE empleados SET nombreempleado=?, phoneempleado=?, edad=?, negocio_id=?, disponibilidad=?, metodo_de_cobro=?, descripcion=? WHERE id=?");
-                $stmt->execute([$nombreempleado, $phoneempleado, $edad, $negocio_id, $disponibilidad, $metodo_de_cobro, $descripcion, $id]);
-            
-                $pdo->commit(); // Confirmar la transacción
-            
+                $pdo->commit();
                 header("Location: ../public/admin/index.php");
                 exit;
             } catch (Exception $e) {
-                $pdo->rollBack(); // Revertir cambios si hay error
+                $pdo->rollBack();
                 die("Error en la base de datos: " . $e->getMessage());
             }
             break;
-            
 
         default:
             die("Error: Tipo de entidad no válido.");

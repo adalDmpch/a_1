@@ -149,9 +149,6 @@ include_once '../templates/navbarclient.php';
                         
                         <div class="flex flex-col sm:flex-row items-center gap-8">
                             <div class="relative group cursor-pointer">
-                                <img src="<?= getProfileImage($cliente['foto_de_perfil']) ?>" 
-                                     alt="Foto de perfil"
-                                     class="w-48 h-48 rounded-full object-cover shadow-xl border-4 border-emerald-50 transform transition-all duration-300 group-hover:scale-105 group-hover:border-emerald-100">
                                 <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-full transition-all duration-300 flex items-center justify-center">
                                     <svg class="w-12 h-12 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
@@ -201,15 +198,4 @@ include_once '../templates/navbarclient.php';
     </div>
 </div>
 
-
-<?php
-include_once '../templates/footercliente.php';
-
-// Función auxiliar para manejar imágenes
-function getProfileImage($path) {
-    if ($path && file_exists("../../uploads/" . basename($path))) {
-        return "../uploads/" . htmlspecialchars(basename($path));
-    }
-    return "../assets/default-profile.jpg";
-}
-?>
+<?php include_once '../templates/footercliente.php'; ?>

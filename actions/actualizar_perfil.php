@@ -41,15 +41,17 @@ try {
     }
 
     // Manejar imagen de perfil
-    $nombre_imagen = null;
-    if (!empty($_FILES['foto_perfil']['name'])) {
-        $archivo = manejarSubidaArchivo(
-            $_FILES['foto_perfil'], 
-            '../../uploads/', 
-            ['jpg', 'jpeg', 'png', 'gif'], 
-            2 * 1024 * 1024
-        );
-        $nombre_imagen = $archivo['nombre'];
+    $foto_binaria = null;
+    $hay_imagen_nueva = false;
+    
+    if (!empty($_FILES['foto_perfil']['name']) && $_FILES['foto_perfil']['error'] === UPLOAD_ERR_OK) {
+        // Leer el contenido binario de la imagen
+        $foto_binaria = file_get_contents($_FILES['foto_perfil']['tmp_name']);
+        
+        if ($foto_binaria === false) {
+            throw new Exception("Error al leer la imagen.");
+        }
+        $hay_imagen_nueva = true;
     }
 
     // Paso 1: Establecer el email_cliente a NULL para evitar el conflicto
@@ -63,22 +65,39 @@ try {
     $stmtUsuario->execute([$nuevo_email, $user_id]);
 
     // Paso 3: Actualizar el resto de la información del cliente, incluyendo el nuevo email
-    $sqlCliente2 = "UPDATE cliente SET 
-    nombre = ?, 
-    email_cliente = ?, 
-    phone = ?, 
-    fecha = ?" 
-    . ($nombre_imagen ? ", foto_de_perfil = ?" : "") 
-    . " WHERE id = ?";
-
-    $paramsCliente2 = [$nombre, $nuevo_email, $telefono, $fecha_nacimiento];
-    if ($nombre_imagen) {
-        $paramsCliente2[] = $nombre_imagen;
+    if ($hay_imagen_nueva) {
+        $sqlCliente2 = "UPDATE cliente SET 
+            nombre = ?, 
+            email_cliente = ?, 
+            phone = ?, 
+            fecha = ?,
+            foto_de_perfil = ?
+            WHERE id = ?";
+        
+        $stmtCliente2 = $pdo->prepare($sqlCliente2);
+        $stmtCliente2->bindParam(1, $nombre, PDO::PARAM_STR);
+        $stmtCliente2->bindParam(2, $nuevo_email, PDO::PARAM_STR);
+        $stmtCliente2->bindParam(3, $telefono, PDO::PARAM_STR);
+        $stmtCliente2->bindParam(4, $fecha_nacimiento, PDO::PARAM_STR);
+        $stmtCliente2->bindParam(5, $foto_binaria, PDO::PARAM_LOB);
+        $stmtCliente2->bindParam(6, $cliente_id, PDO::PARAM_INT);
+    } else {
+        $sqlCliente2 = "UPDATE cliente SET 
+            nombre = ?, 
+            email_cliente = ?, 
+            phone = ?, 
+            fecha = ?
+            WHERE id = ?";
+        
+        $stmtCliente2 = $pdo->prepare($sqlCliente2);
+        $stmtCliente2->bindParam(1, $nombre, PDO::PARAM_STR);
+        $stmtCliente2->bindParam(2, $nuevo_email, PDO::PARAM_STR);
+        $stmtCliente2->bindParam(3, $telefono, PDO::PARAM_STR);
+        $stmtCliente2->bindParam(4, $fecha_nacimiento, PDO::PARAM_STR);
+        $stmtCliente2->bindParam(5, $cliente_id, PDO::PARAM_INT);
     }
-    $paramsCliente2[] = $cliente_id;
-
-    $stmtCliente2 = $pdo->prepare($sqlCliente2);
-    $stmtCliente2->execute($paramsCliente2);
+    
+    $stmtCliente2->execute();
 
     $pdo->commit(); // Confirmar cambios
 

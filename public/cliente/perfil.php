@@ -41,7 +41,7 @@ include_once '../templates/navbarclient.php';
         <p class="text-lg opacity-90 mb-6 text-center">Estamos emocionados de crear un look perfecto para ti.
             Necesitamos algunos datos importantes para personalizar tu experiencia al máximo.</p>
 
-        <a
+        <a href="../cliente/reservasion.php"
             class="block w-full max-w-xs mx-auto bg-white text-emerald-700 px-8 py-3 rounded-full hover:scale-105 transition text-center font-bold">
             Comenzar Reserva 🚀
         </a>

@@ -1,10 +1,41 @@
+<?php
+require '../../config/confg.php';
+
+
+try {
+    $user_id = $_SESSION['user_id'];
+
+    $stmt = $pdo->prepare("SELECT cliente.* FROM cliente 
+                          INNER JOIN usuarios ON cliente.id = usuarios.cliente_id 
+                          WHERE usuarios.id = ?");
+    $stmt->execute([$user_id]);
+    $cliente = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$cliente) {
+        throw new Exception("Perfil no encontrado");
+    }
+
+} catch (Exception $e) {
+    die("Error: " . $e->getMessage());
+}
+
+function getProfileImageNavr($profile_photo) {
+    if ($profile_photo && is_resource($profile_photo)) {
+        $photo_data = stream_get_contents($profile_photo);
+        return 'data:image/jpeg;base64,' . base64_encode($photo_data);
+    }
+    return "/assets/default-profile.jpg";
+}
+?>
+
     <!-- Main Content -->
     <main class="flex-grow max-w-7xl mx-auto px-4 py-6 grid lg:grid-cols-4 gap-6">
         <div class="w-full max-w-md mx-auto space-y-6">
             <!-- Profile Card -->
             <div class="bg-white shadow-lg rounded-xl p-8 text-center flex flex-col items-center">
-                <img src="../uploads/<?= htmlspecialchars(basename($cliente['foto_de_perfil'] ?? 'default.png')) ?>" alt="Foto de perfil"
-                    class="w-40 h-40 rounded-full object-cover mb-6 shadow-xl border-4 border-emerald-100">
+                <img src="<?= getProfileImageNavr($cliente['foto_de_perfil']) ?>" 
+                alt="Foto de perfil"
+                class="w-40 h-40 rounded-full object-cover mb-6 shadow-xl border-4 border-emerald-100">
                     
                 <h2 class="text-3xl font-bold text-gray-900 mb-3"> <?= htmlspecialchars($cliente['nombre'] ?? 'Nombre no disponible') ?></h2>
                 <span class="bg-emerald-100 text-emerald-700 px-4 py-2 rounded-full text-sm font-semibold">
@@ -12,12 +43,8 @@
                 </span>
 
                 <div class="flex items-center justify-center space-x-1 space-y-2 text-sm text-gray-400 mb-3 sm:mb-1">
-                    <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <span class="text-xs sm:text-sm">Miembro desde: Enero 2024</span>
+                </br>
+                    <span class="text-xs sm:text-sm">Correo: <?= htmlspecialchars($cliente['email_cliente'] ?? 'Email no disponible') ?></span>
                 </div>
                 <a href="../cliente/editar_perfil.php"
                     class="mt-6 w-full max-w-xs py-3 px-6 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg transition-colors text-base font-semibold text-center block">
@@ -37,16 +64,6 @@
                                 d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
                         <span class="text-base group-hover:text-emerald-700">Historial Completo</span>
-                    </a>
-
-                    <a href="#metodos-pago"
-                        class="flex items-center p-4 text-gray-800 hover:bg-emerald-50 rounded-lg transition-colors border border-emerald-100 group">
-                        <svg class="w-6 h-6 mr-4 text-emerald-600 group-hover:text-emerald-700" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                        </svg>
-                        <span class="text-base group-hover:text-emerald-700">Métodos de Pago</span>
                     </a>
 
                     <a href="#seguridad"

@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
                     // Insertar usuario
                     $hash_contra = password_hash($contra_empleados, PASSWORD_DEFAULT);
-                    $stmt = $pdo->prepare("INSERT INTO usuarios (email_usuarios, password, rol, fecha_creacion, activo) VALUES (?, ?, 'empleado', NOW(), TRUE)");
+                    $stmt = $pdo->prepare("INSERT INTO usuarios (email_usuario, password, rol, fecha_creacion, activo) VALUES (?, ?, 'empleado', NOW(), TRUE)");
                     $stmt->execute([$email_empleado, $hash_contra]);
     
                     $usuario_id = $pdo->lastInsertId();

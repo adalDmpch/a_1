@@ -226,7 +226,9 @@ foreach ($citas as $cita) {
         
         <!-- Cabecera del reporte -->
         <div class="header">
-            <h1>REPORTE DE EMPLEADO</h1>
+            <h1>REPORTE DE EMPLEADO
+                DE BELLA HAIR
+            </h1>
             <p class="print-only">Fecha de generación: <?= date('d/m/Y H:i') ?></p>
         </div>
         

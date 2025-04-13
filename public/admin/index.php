@@ -324,18 +324,15 @@ include_once '../templates/mode.php';
                             <td class="p-3 text-center">
                                 <div class="flex justify-center space-x-2">
                                     <a href="/a_1/public/admin/edit.php?id=<?= $empleado['id'] ?>" 
-                                       class="inline-flex items-center text-green-600 hover:text-green-900 font-medium">
+                                        class="inline-flex items-center text-green-600 hover:text-green-900 font-medium">
                                         <i class="fas fa-edit"></i>
                                         <span class="ml-1 hidden sm:inline">Editar</span>
                                     </a>
                                     <span class="text-gray-300">|</span>
-                                    <a href="javascript:void(0)" 
-                                       class="inline-flex items-center text-red-600 hover:text-red-900 font-medium delete-btn" 
-                                       data-id="<?= $empleado['id'] ?>" 
-                                       data-tipo="empleado" 
-                                       data-nombre="<?= htmlspecialchars($empleado['nombreempleado']) ?>">
-                                        <i class="fas fa-trash-alt"></i>
-                                        <span class="ml-1 hidden sm:inline">Eliminar</span>
+                                    <a href="/a_1/public/admin/employee_details.php?id=<?= $empleado['id'] ?>" 
+                                        class="inline-flex items-center text-blue-600 hover:text-blue-900 font-medium">
+                                        <i class="fas fa-eye"></i>
+                                        <span class="ml-1 hidden sm:inline">Detalles</span>
                                     </a>
                                 </div>
                             </td>

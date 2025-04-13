@@ -393,6 +393,50 @@ include_once '../templates/mode.php';
         <?php endif; ?>
     </div>
 </main>
+<?php if (isset($_GET['mensaje'])): ?>
+    <div class="toast-notification <?php echo $_GET['tipo']; ?>">
+        <?php echo htmlspecialchars($_GET['mensaje']); ?>
+    </div>
+
+    <style>
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #333;
+            color: #fff;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            font-family: sans-serif;
+            z-index: 9999;
+            opacity: 0;
+            animation: fadeInOut 5s ease-in-out forwards;
+        }
+
+        .toast-notification.success {
+            background-color: #28a745;
+        }
+
+        .toast-notification.error {
+            background-color: #dc3545;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(20px); }
+            10% { opacity: 1; transform: translateY(0); }
+            90% { opacity: 1; }
+            100% { opacity: 0; transform: translateY(20px); }
+        }
+    </style>
+
+    <script>
+        setTimeout(() => {
+            const toast = document.querySelector('.toast-notification');
+            if (toast) toast.remove();
+        }, 5000);
+    </script>
+<?php endif; ?>
 
 <!-- Sweet Alert Script -->
 <script>

@@ -26,7 +26,7 @@ include_once '../templates/mode.php';
     <div class="max-w-7xl mx-auto px-4">
         <div class="flex justify-between items-center py-4">
             <div class="flex items-center">
-                <img src="../../assets/images/logo.png" alt="Logo" class="h-12 w-12 rounded-full"/>
+                
                 <span class="text-2xl font-bold text-green-700 ml-2">Bella Hair</span>
             </div>
             

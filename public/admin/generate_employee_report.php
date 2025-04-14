@@ -276,10 +276,10 @@ foreach ($citas as $cita) {
                 <div class="stat-label">Citas completadas</div>
             </div>
             
-            <div class="stat-box">
+            <!--<div class="stat-box">
                 <div class="stat-value"><?= $porcentajeCompletadas ?>%</div>
                 <div class="stat-label">Tasa de finalización</div>
-            </div>
+            </div>-->
         </div>
         
         <div class="stats-container">

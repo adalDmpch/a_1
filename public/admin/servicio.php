@@ -40,7 +40,7 @@ include_once '../templates/mode.php';
                 </label>
                 <input type="text" name="nuevo_servicio" id="nuevo_servicio" required 
                     class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0F5132] focus:border-[#0F5132] transition"
-                    placeholder="Ej: Corte de cabello, Manicure, Tratamiento facial...">
+                    placeholder="Ej: Corte de cabello...">
             </div>
 
             <div class="mb-4">

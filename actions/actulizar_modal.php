@@ -1,50 +1,65 @@
 <?php
 require '../config/confg.php';
+
 session_start();
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $estado = isset($_POST['estado']) && !empty($_POST['estado']) ? $_POST['estado'] : null;
-    $cita_id = isset($_POST['cita_id']) ? intval($_POST['cita_id']) : 0;
-
-    // Verificar si los datos son válidos
-    if ($estado && $cita_id > 0) {
-        try {
-            $sql = "UPDATE citas SET estado = :estado WHERE id = :cita_id";
-            $stmt = $pdo->prepare($sql);
-
-            if ($stmt && $stmt->execute([ ':estado' => $estado, ':cita_id' => $cita_id ])) {
-                $_SESSION['mensaje'] = 'Estado actualizado correctamente';
-                header("Location: ../public/empleado/agenda.php");
-                exit();
-            } else {
-                $_SESSION['error'] = 'Hubo un error al actualizar el estado.';
-            }
-        } catch (PDOException $e) {
-            $_SESSION['error'] = 'Error en la base de datos: ' . $e->getMessage();
-        }
-    } else {
-        $_SESSION['error'] = 'Faltan datos en el formulario.';
-    }
-    header("Location: ../public/empleado/agenda.php");
+if (!isset($_SESSION["user_id"]) || $_SESSION["rol"] !== "empleado") {
+    header("Location: ../public/login.php");
     exit();
 }
 
-// Mostrar mensajes de error o éxito si existen en la sesión
-if (isset($_SESSION['error'])) {
-    echo '<div class="max-w-7xl mx-auto mt-24 mb-4">
-            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg" role="alert">
-                <p>' . htmlspecialchars($_SESSION['error']) . '</p>
-            </div>
-          </div>';
-    unset($_SESSION['error']);
+if (isset($_POST['cita_id'])) {
+    $cita_id = intval($_POST['cita_id']);
+    
+    // Si se está actualizando el estado
+    if (isset($_POST['estado'])) {
+        $nuevo_estado = $_POST['estado'];
+        
+        $estados_permitidos = ['confirmada', 'rechazada', 'completada', 'no_asistio'];
+        if (in_array($nuevo_estado, $estados_permitidos)) {
+            $sql = "UPDATE citas SET estado = ? WHERE id = ?";
+            $stmt = $pdo->prepare($sql);
+            
+            if ($stmt->execute([$nuevo_estado, $cita_id])) {
+                $_SESSION['exito'] = "El estado de la cita se ha actualizado correctamente.";
+            } else {
+                $_SESSION['error'] = "Ocurrió un error al actualizar el estado de la cita.";
+            }
+        } else {
+            $_SESSION['error'] = "El estado solicitado no es válido.";
+        }
+    }
+    
+    // Manejar acciones de inicio y fin de servicio
+    if (isset($_POST['accion'])) {
+        $accion = $_POST['accion'];
+        
+        if ($accion === 'iniciar_servicio') {
+            $sql = "UPDATE citas SET hora_inicio_real = CURRENT_TIME WHERE id = ?";
+            $stmt = $pdo->prepare($sql);
+            
+            if ($stmt->execute([$cita_id])) {
+                $_SESSION['exito'] = "El servicio se ha iniciado correctamente.";
+            } else {
+                $_SESSION['error'] = "Ocurrió un error al registrar el inicio del servicio.";
+            }
+        } 
+        elseif ($accion === 'finalizar_servicio') {
+            // Actualizar hora de finalización y cambiar estado a 'completada'
+            $sql = "UPDATE citas SET hora_fin_real = CURRENT_TIME, estado = 'completada' WHERE id = ?";
+            $stmt = $pdo->prepare($sql);
+            
+            if ($stmt->execute([$cita_id])) {
+                $_SESSION['exito'] = "El servicio se ha finalizado correctamente y marcado como completado.";
+            } else {
+                $_SESSION['error'] = "Ocurrió un error al registrar la finalización del servicio.";
+            }
+        }
+    }
+    
+    header("Location: ../public/empleado/inicio.php");
+    exit();
+} else {
+    $_SESSION['error'] = "No se especificó ninguna cita.";
+    header("Location: ../public/empleado/inicio.php");
+    exit();
 }
-
-if (isset($_SESSION['mensaje'])) {
-    echo '<div class="max-w-7xl mx-auto mt-24 mb-4">
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg" role="alert">
-                <p>' . htmlspecialchars($_SESSION['mensaje']) . '</p>
-            </div>
-          </div>';
-    unset($_SESSION['mensaje']);
-}
-?>

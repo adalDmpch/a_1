@@ -170,151 +170,156 @@ if (isset($_SESSION['error'])) {
         <!-- Tabla de historial -->
         <div class="bg-white rounded-2xl shadow-sm p-9 overflow-hidden">
             <div class="overflow-x-auto p-8">
-                <table id="tablaCitas" class="min-w-full divide-y divide-gray-200 p-6">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Fecha
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Cliente
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Servicio
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Duración
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Precio
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Estado
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Acciones
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200 p-6">
-                        <?php if (!empty($citas) && is_array($citas)):  ?>
-                             <?php foreach ($citas as $cita): ?>
-                                <tr class="hover:bg-gray-50" data-fecha="<?php echo $cita['fecha']; ?>" data-servicio="<?php echo htmlspecialchars($cita['tipo']); ?>" data-cliente="<?php echo htmlspecialchars($cita['nombre']); ?>">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <?php 
-                                            $fecha = new DateTime($cita['fecha']);
-                                            echo $fecha->format('d M, Y'); 
-                                        ?>
-                                        <div class="text-xs text-gray-400"><?php echo $cita['hora']; ?></div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-medium">
-                                            <?php 
-                                                $nombre = $cita['nombre']; 
-                                                $nombres = explode(' ', $nombre);
-
-                                                // Obtenemos la primera inicial
-                                                $inicial_1 = substr($nombre, 0, 1);
-
-                                                // Verificamos si hay al menos dos palabras en el nombre
-                                                if (count($nombres) > 1) {
-                                                    // Si hay más de un nombre, obtenemos la inicial del segundo nombre
-                                                    $inicial_2 = substr($nombres[1], 0, 1);
-                                                } else {
-                                                    // Si solo hay un nombre, dejamos la segunda inicial en blanco o algún valor por defecto
-                                                    $inicial_2 = '';
-                                                }
-
-                                            // Mostramos las iniciales
-                                            echo $inicial_1 . $inicial_2;
-                                            ?>   
-                                            </div>
-                                            <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900">
-                                                    <?php echo htmlspecialchars($cita['nombre']); ?>
-                                                </div>
-                                                <div class="text-sm text-gray-500">
-                                                    <?php echo htmlspecialchars($cita['phone']); ?>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900"><?php echo htmlspecialchars($cita['tipo']); ?></div>
-                                        <div class="text-xs text-gray-500">Estilista: <?php echo htmlspecialchars($cita['nombreempleado']); ?></div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <?php
-                                            $duracion = $cita['duracion'];
-                                            list($horas, $minutos, $segundos) = explode(':', $duracion);
-                                            $horas = (int)$horas;
-                                            $minutos = (int)$minutos;
-                                            $segundos = (int)$segundos;
-
-                                            if ($horas > 0) {
-                                                echo $horas . 'h ';
-                                            }
-                                            if ($minutos > 0 || $horas == 0) {
-                                                echo $minutos . 'm';
-                                            }
-                                        ?>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
-                                        $<?php echo number_format($cita['precio'], 0, ',', '.'); ?>
-                                        </td>
-                                    <td class="px-6 py-4 whitespace-nowrap ">
-                                        <?php
-                                            $estadoClase = '';
-                                            $estadoTexto = $cita['estado'];
-                                            
-                                            switch ($cita['estado']) {
-                                                case 'confirmada':
-                                                    $estadoClase = 'bg-green-100 text-green-800';
-                                                    $estadoTexto = 'confirmada';
-                                                    break;
-                                                case 'rechazada':
-                                                    $estadoClase = 'bg-red-100 text-red-700';
-                                                    $estadoTexto = 'rechazada';
-                                                    break;
-                                                case 'completada':
-                                                    $estadoClase = 'bg-orange-100 text-orange-700';
-                                                    $estadoTexto = 'completada';
-                                                    break;
-                                                case 'no_asistio':
-                                                    $estadoClase = 'bg-yellow-100 text-yellow-700';
-                                                    $estadoTexto = 'no_asistio';
-                                                    break;
-                                                default:
-                                                    $estadoClase = 'bg-blue-100 text-blue-800';
-                                                    break;
-                                            }
-                                        ?>
-                                        <span class=" px-2 inline-flex text-xs leading-5 font-semibold rounded-full <?php echo $estadoClase; ?>">
-                                            <?php echo $estadoTexto; ?>
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium p-8">
-                                        <button onclick="mostrarDetallesCita(<?php echo $cita['id']; ?>)" class="text-emerald-600 hover:text-emerald-800 mr-3">Ver detalles</button>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="7" class="px-6 py-4 text-center text-gray-500 p-8">
-                                    <div class="text-center py-12 animate__animated animate__fadeIn p-8">
-                                        <svg class="w-32 h-32 mx-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                        <h3 class="mt-6 text-2xl font-medium text-gray-900">No hay citas en el historial</h3>
-                                        <p class="mt-2 text-gray-600 max-w-md mx-auto">Aprovecha para organizar otras tareas o revisar la Agenda de citas pendientes.</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+<!-- Modificación para mostrar tiempos reales en la tabla de historial -->
+<table id="tablaCitas" class="min-w-full divide-y divide-gray-200 p-6">
+    <thead>
+        <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Fecha
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Cliente
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Servicio
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Programado/Real
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Precio
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Estado
+            </th>
+            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Acciones
+            </th>
+        </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-gray-200 p-6">
+        <?php if (!empty($citas) && is_array($citas)):  ?>
+             <?php foreach ($citas as $cita): ?>
+                <tr class="hover:bg-gray-50" data-fecha="<?php echo $cita['fecha']; ?>" data-servicio="<?php echo htmlspecialchars($cita['tipo']); ?>" data-cliente="<?php echo htmlspecialchars($cita['nombre']); ?>">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <?php 
+                            $fecha = new DateTime($cita['fecha']);
+                            echo $fecha->format('d M, Y'); 
+                        ?>
+                        <div class="text-xs text-gray-400">Prog: <?php echo $cita['hora']; ?></div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-medium">
+                            <?php 
+                                $nombre = $cita['nombre']; 
+                                $nombres = explode(' ', $nombre);
+                                $inicial_1 = substr($nombre, 0, 1);
+                                if (count($nombres) > 1) {
+                                    $inicial_2 = substr($nombres[1], 0, 1);
+                                } else {
+                                    $inicial_2 = '';
+                                }
+                                echo $inicial_1 . $inicial_2;
+                            ?>   
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900">
+                                    <?php echo htmlspecialchars($cita['nombre']); ?>
+                                </div>
+                                <div class="text-sm text-gray-500">
+                                    <?php echo htmlspecialchars($cita['phone']); ?>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900"><?php echo htmlspecialchars($cita['tipo']); ?></div>
+                        <div class="text-xs text-gray-500">Estilista: <?php echo htmlspecialchars($cita['nombreempleado']); ?></div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">
+                            <?php
+                                // Duración programada
+                                $duracion = $cita['duracion'];
+                                list($horas, $minutos, $segundos) = explode(':', $duracion);
+                                $horas = (int)$horas;
+                                $minutos = (int)$minutos;
+                                
+                                echo '<span class="text-gray-500">Prog: </span>';
+                                if ($horas > 0) {
+                                    echo $horas . 'h ';
+                                }
+                                if ($minutos > 0 || $horas == 0) {
+                                    echo $minutos . 'm';
+                                }
+                                
+                                // Si existe tiempo real, calcularlo y mostrarlo
+                                if (!empty($cita['hora_inicio_real']) && !empty($cita['hora_fin_real'])) {
+                                    $inicio = new DateTime($cita['hora_inicio_real']);
+                                    $fin = new DateTime($cita['hora_fin_real']);
+                                    $duracionReal = $inicio->diff($fin);
+                                    
+                                    echo '<div class="text-xs text-blue-600 mt-1">Real: ';
+                                    if ($duracionReal->h > 0) {
+                                        echo $duracionReal->h . 'h ';
+                                    }
+                                    if ($duracionReal->i > 0 || $duracionReal->h == 0) {
+                                        echo $duracionReal->i . 'm';
+                                    }
+                                    echo '</div>';
+                                }
+                            ?>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                        $<?php echo number_format($cita['precio'], 0, ',', '.'); ?>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <?php
+                            $estadoClase = '';
+                            $estadoTexto = $cita['estado'];
+                            
+                            switch ($cita['estado']) {
+                                case 'confirmada':
+                                    $estadoClase = 'bg-green-100 text-green-800';
+                                    $estadoTexto = 'Confirmada';
+                                    break;
+                                case 'rechazada':
+                                    $estadoClase = 'bg-red-100 text-red-700';
+                                    $estadoTexto = 'Rechazada';
+                                    break;
+                                case 'completada':
+                                    $estadoClase = 'bg-orange-100 text-orange-700';
+                                    $estadoTexto = 'Completada';
+                                    break;
+                                case 'no_asistio':
+                                    $estadoClase = 'bg-yellow-100 text-yellow-700';
+                                    $estadoTexto = 'No asistió';
+                                    break;
+                                default:
+                                    $estadoClase = 'bg-blue-100 text-blue-800';
+                                    break;
+                            }
+                        ?>
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full <?php echo $estadoClase; ?>">
+                            <?php echo $estadoTexto; ?>
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button onclick="mostrarDetallesCita(<?php echo $cita['id']; ?>)" class="text-emerald-600 hover:text-emerald-800 mr-3">Ver detalles</button>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <tr>
+                <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+                    No hay citas en el historial.
+                </td>
+            </tr>
+        <?php endif; ?>
+    </tbody>
+</table>
             </div>
             
             <?php

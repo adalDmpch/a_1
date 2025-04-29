@@ -19,6 +19,8 @@ $sql = "SELECT
             c.hora, 
             c.estado,
             c.notas, 
+            c.hora_inicio_real,
+            c.hora_fin_real,
             cl.nombre AS nombre, 
             cl.phone AS phone, 
             cl.email_cliente AS cliente_email,
@@ -41,7 +43,10 @@ if (!$cita) {
     exit('Cita no encontrada.');
 }
 
-
+// Determinar si se muestran los botones de control de inicio/fin
+$mostrarControlesServicio = ($cita['estado'] === 'confirmada');
+$servicioIniciado = !empty($cita['hora_inicio_real']);
+$servicioFinalizado = !empty($cita['hora_fin_real']);
 
 ?>
 
@@ -78,11 +83,27 @@ if (!$cita) {
         </span>
     </div>
     <div class="mt-4 md:mt-0 text-right">
-        <div class="text-sm text-gray-500 mb-1">Fecha y hora:</div>
+        <div class="text-sm text-gray-500 mb-1">Fecha y hora programada:</div>
         <div class="text-lg font-medium"><?php echo $cita['fecha']; ?> a las <?php echo $cita['hora']; ?></div>
     </div>
 </div>
 
+<!-- Información de inicio y fin real del servicio -->
+<?php if ($servicioIniciado || $servicioFinalizado): ?>
+<div class="bg-blue-50 p-4 rounded-lg mb-6">
+    <h3 class="text-md font-medium text-blue-800 mb-2">Tiempo real del servicio</h3>
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            <span class="text-sm text-blue-700">Hora de inicio:</span>
+            <div class="font-medium"><?php echo $servicioIniciado ? $cita['hora_inicio_real'] : 'No iniciado'; ?></div>
+        </div>
+        <div>
+            <span class="text-sm text-blue-700">Hora de finalización:</span>
+            <div class="font-medium"><?php echo $servicioFinalizado ? $cita['hora_fin_real'] : 'En proceso'; ?></div>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
 
 <!-- Información del cliente y servicio -->
 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
@@ -107,8 +128,8 @@ if (!$cita) {
                         $inicial_2 = '';
                     }
 
-                // Mostramos las iniciales
-                echo $inicial_1 . $inicial_2;
+                    // Mostramos las iniciales
+                    echo $inicial_1 . $inicial_2;
                 ?>            
             </div>
             <div class="ml-4">
@@ -120,9 +141,9 @@ if (!$cita) {
     </div>
     
     <!-- Información del servicio -->
-    <div >
-        <h3 class="text-lg TEXT-CENTER font-medium text-gray-900 mb-4 ">Detalles del servicio</h3>
-        <div class="space-y-3 ">
+    <div>
+        <h3 class="text-lg text-center font-medium text-gray-900 mb-4">Detalles del servicio</h3>
+        <div class="space-y-3">
             <div class="flex justify-between">
                 <div class="text-gray-500">Servicio:</div>
                 <div class="font-medium text-right"><?php echo $cita['servicio']; ?></div>
@@ -153,27 +174,44 @@ if (!$cita) {
 
 <!-- Acciones -->
 <div class="flex justify-end space-x-3 pt-4 border-t">
+    <!-- Formulario para acciones de cambio de estado -->
     <form action="../../actions/actulizar_modal.php" method="POST">
         <input type="hidden" name="cita_id" value="<?php echo $cita['id']; ?>">
 
-        <!-- Mostrar solo el botón "Cerrar" si el estado no es "confirmada" -->
-        <?php if ($cita['estado'] !== 'confirmada'): ?>
+        <!-- Botones para iniciar/finalizar servicio (solo mostrados cuando la cita está confirmada) -->
+        <?php if ($mostrarControlesServicio): ?>
+            <?php if (!$servicioIniciado): ?>
+                <button type="submit" name="accion" value="iniciar_servicio" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+                    Iniciar Servicio
+                </button>
+            <?php elseif (!$servicioFinalizado): ?>
+                <button type="submit" name="accion" value="finalizar_servicio" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700">
+                    Finalizar Servicio
+                </button>
+            <?php endif; ?>
+        <?php endif; ?>
+
+        <!-- Mostrar solo el botón "Cerrar" si el estado no es "confirmada" o si el servicio ya finalizó -->
+        <?php if ($cita['estado'] !== 'confirmada' || $servicioFinalizado): ?>
             <button type="button" onclick="cerrarModal()" class="bg-gray-200 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-300">
                 Cerrar
             </button>
         <?php endif; ?>
 
-        <!-- Mostrar los botones "Completar Cita" y "No asistió" solo si el estado no es "rechazada", "completada" o "no_asistio" -->
-        <?php if (!in_array($cita['estado'], ['rechazada', 'completada', 'no_asistio'])): ?>
+        <!-- Mostrar los botones "Completar Cita" y "No asistió" solo si el estado es "confirmada" y el servicio ya comenzó pero no finalizó -->
+        <?php if ($cita['estado'] === 'confirmada' && $servicioIniciado && !$servicioFinalizado): ?>
             <button type="submit" name="estado" value="completada" class="bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-emerald-700">
                 Completar Cita
             </button>
+        <?php endif; ?>
+        
+        <!-- Botón No asistió (solo si la cita está confirmada pero no se ha iniciado) -->
+        <?php if ($cita['estado'] === 'confirmada' && !$servicioIniciado): ?>
             <button type="submit" name="estado" value="no_asistio" class="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700">
                 No asistió
             </button>
         <?php endif; ?>
     </form>
-
 
     <?php 
         if (isset($mensaje)) {
@@ -181,4 +219,3 @@ if (!$cita) {
         }
     ?>
 </div>
-
